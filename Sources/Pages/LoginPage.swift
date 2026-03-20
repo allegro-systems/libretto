@@ -5,8 +5,6 @@ struct LoginPage: Page {
 
     var body: some Node {
         Stack {
-            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-mono)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
-
             Section {
                 Heading(.one) { "Sign in to Libretto" }
                     .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text, align: .center)
@@ -31,62 +29,77 @@ struct LoginPage: Page {
             // Login form
             Section {
                 Stack {
-                    Text { "EMAIL" }
-                        .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
-
+                    // Magic link section
                     Stack {
-                        Input(type: .email, name: "email", placeholder: "you@example.com")
-                            .htmlAttribute("id", "magic-link-email")
-                            .padding(14)
-                            .font(.mono, size: 13)
-                            .border(width: 1, color: .border, style: .solid)
+                        Text { "EMAIL" }
+                            .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
 
-                        Button(type: .button) {
-                            Text { "Send Magic Link" }
+                        Stack {
+                            Input(type: .email, name: "email", placeholder: "you@example.com")
+                                .htmlAttribute("id", "magic-link-email")
+                                .padding(14)
+                                .font(.mono, size: 13)
+                                .background(.elevated)
+                                .border(width: 1, color: .border, style: .solid)
+
+                            Button(type: .button) {
+                                Text { "Send Magic Link" }
+                            }
+                            .htmlAttribute("id", "magic-link-btn")
+                            .font(.mono, size: 13, weight: .medium, color: .bg)
+                            .padding(14, at: .vertical)
+                            .padding(28, at: .horizontal)
+                            .background(.accent)
+                            .hover { $0.opacity(0.85) }
                         }
-                        .htmlAttribute("id", "magic-link-btn")
-                        .font(.mono, size: 13, weight: .medium, color: .bg)
+                        .flex(.row, gap: 12)
+                        .compact { $0.flex(.column, gap: 12) }
+
+                        Paragraph { "" }
+                            .htmlAttribute("id", "magic-link-status")
+                            .font(.mono, size: 13, color: .muted)
+                    }
+                    .flex(.column, gap: 16)
+
+                    // Divider with extra spacing
+                    HorizontalRule()
+                        .background(.border)
+                        .size(height: 1)
+                        .border(width: 0, color: .border, style: .none)
+                        .padding(8, at: .vertical)
+
+                    // OAuth / passkey section
+                    Stack {
+                        Button(type: .button) {
+                            Text { "Sign in with Passkey" }
+                        }
+                        .htmlAttribute("disabled", "true")
+                        .font(.mono, size: 13, weight: .medium, color: .text)
                         .padding(14, at: .vertical)
                         .padding(28, at: .horizontal)
-                        .background(.accent)
-                        .hover { $0.opacity(0.85) }
-                    }
-                    .flex(.row, gap: 12)
-                    .compact { $0.flex(.column, gap: 12) }
+                        .border(width: 1, color: .border, style: .solid)
+                        .opacity(0.5)
 
-                    Paragraph { "" }
-                        .htmlAttribute("id", "magic-link-status")
-                        .font(.mono, size: 13, color: .muted)
+                        Link(to: "/auth/oauth/github/login") {
+                            Text { "Sign in with GitHub" }
+                        }
+                        .font(.mono, size: 13, weight: .medium, color: .text, align: .center, decoration: TextDecoration.none)
+                        .padding(14, at: .vertical)
+                        .padding(28, at: .horizontal)
+                        .border(width: 1, color: .border, style: .solid)
+                        .hover { $0.background(.elevated) }
+                    }
+                    .flex(.column, gap: 12, align: .center)
                 }
-                .flex(.column, gap: 16)
-                .size(maxWidth: 580)
-
-                HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
-
-                Stack {
-                    Button(type: .button) {
-                        Text { "Sign in with Passkey" }
-                    }
-                    .htmlAttribute("disabled", "true")
-                    .font(.mono, size: 13, weight: .medium, color: .text)
-                    .padding(14, at: .vertical)
-                    .padding(28, at: .horizontal)
-                    .border(width: 1, color: .border, style: .solid)
-                    .opacity(0.5)
-
-                    Link(to: "/auth/oauth/github/login") {
-                        Text { "Sign in with GitHub" }
-                    }
-                    .font(.mono, size: 13, weight: .medium, color: .text, align: .center, decoration: TextDecoration.none)
-                    .padding(14, at: .vertical)
-                    .padding(28, at: .horizontal)
-                    .border(width: 1, color: .border, style: .solid)
-                    .hover { $0.background(.elevated) }
-                }
-                .flex(.column, gap: 12, align: .center)
-                .size(maxWidth: 580)
+                .flex(.column, gap: 24)
+                .padding(40)
+                .background(.elevated)
+                .border(width: 1, color: .border, style: .solid)
+                .size(maxWidth: 440)
+                .radius(8)
+                .compact { $0.padding(24) }
             }
-            .flex(.column, gap: 28, align: .center)
+            .flex(.column, gap: 0, align: .center)
             .padding(80, at: .vertical)
             .padding(56, at: .horizontal)
             .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
