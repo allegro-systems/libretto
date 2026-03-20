@@ -9,6 +9,7 @@ let package = Package(
         .package(path: "../score-plugins/score-oauth"),
         .package(path: "../score-plugins/score-payments"),
         .package(path: "../score-plugins/score-lucide"),
+        .package(path: "../score-plugins/allegro-theme"),
     ],
     targets: [
         .executableTarget(
@@ -18,6 +19,7 @@ let package = Package(
                 .product(name: "ScoreOAuth", package: "score-oauth"),
                 .product(name: "ScorePayments", package: "score-payments"),
                 .product(name: "ScoreLucide", package: "score-lucide"),
+                .product(name: "AllegroTheme", package: "allegro-theme"),
             ],
             path: "Sources"
         )

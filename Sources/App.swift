@@ -3,10 +3,11 @@ import Score
 import ScoreOAuth
 import ScorePayments
 import ScoreLucide
+import AllegroTheme
 
 @main
 struct LibrettoApp: Application {
-    var theme: (any Theme)? { LibrettoTheme() }
+    var theme: (any Theme)? { AllegroTheme() }
 
     var plugins: [any ScorePlugin] {
         [

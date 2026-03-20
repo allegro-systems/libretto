@@ -8,24 +8,24 @@ struct LandingPage: Page {
             // Hero section
             Stack {
                 Heading(.one) { "Libretto" }
-                    .font(.sans, size: 56, weight: .bold)
+                    .font(.serif, size: 56, weight: .light, color: .text)
 
                 Paragraph { "Write. Publish. Connect." }
-                    .font(.sans, size: 22, color: .muted)
+                    .font(.mono, size: 18, color: .muted)
 
                 Stack {
                     Link(to: "/login") { "Start Writing" }
-                        .font(.sans, size: 16, weight: .semibold, decoration: TextDecoration.none)
+                        .font(.sans, size: 16, weight: .semibold, color: .bg, decoration: TextDecoration.none)
                         .padding(12, at: .vertical)
                         .padding(24, at: .horizontal)
-                        .background(ColorToken("accent"))
+                        .background(.accent)
                         .radius(8)
 
                     Link(to: "/blog") { "Read Blog" }
-                        .font(.sans, size: 16, weight: .semibold, decoration: TextDecoration.none)
+                        .font(.sans, size: 16, weight: .semibold, color: .text, decoration: TextDecoration.none)
                         .padding(12, at: .vertical)
                         .padding(24, at: .horizontal)
-                        .background(ColorToken("elevated"))
+                        .border(width: 1, color: .border, style: .solid)
                         .radius(8)
                 }
                 .flex(.row, gap: 16)
