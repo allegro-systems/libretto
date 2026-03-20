@@ -30,9 +30,12 @@ struct LibrettoApp: Application {
     @PageBuilder
     var pages: [any Page] {
         LandingPage()
+        LoginPage()
     }
 
     var controllers: [any Controller] {
-        []
+        [
+            AuthController(),
+        ]
     }
 }
