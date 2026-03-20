@@ -41,6 +41,8 @@ struct LibrettoApp: Application {
         SettingsPage()
     }
 
+    var errorPage: (any ErrorPage.Type)? { LibrettoErrorPage.self }
+
     var controllers: [any Controller] {
         [
             AuthController(),
@@ -48,6 +50,9 @@ struct LibrettoApp: Application {
             PublicPostController(),
             BillingController(),
             ProfileController(),
+            FeedController(),
+            LikeController(),
+            CommentController(),
         ]
     }
 }
