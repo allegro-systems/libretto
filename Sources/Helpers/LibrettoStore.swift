@@ -45,10 +45,19 @@ final class LibrettoStore: Sendable {
 
     func savePost(_ post: Post) async throws {
         try await store.set(key: ["posts", post.authorId, post.id], value: post)
+        // Post-ID index for lookup by id alone (used by likes/comments)
+        try await store.set(key: ["postids", post.id], value: "\(post.authorId)/\(post.id)")
         if post.status == .published {
             // Slug index for URL lookup
             try await store.set(key: ["slugs", post.slug], value: "\(post.authorId)/\(post.id)")
         }
+    }
+
+    func getPostById(_ postId: String) async throws -> Post? {
+        guard let ref: String = try await store.get(key: ["postids", postId]) else { return nil }
+        let parts = ref.split(separator: "/")
+        guard parts.count == 2 else { return nil }
+        return try await getPost(authorId: String(parts[0]), postId: String(parts[1]))
     }
 
     func getPost(authorId: String, postId: String) async throws -> Post? {
@@ -80,6 +89,7 @@ final class LibrettoStore: Sendable {
         if let post = try await getPost(authorId: authorId, postId: postId) {
             try await store.delete(key: ["slugs", post.slug])
         }
+        try await store.delete(key: ["postids", postId])
         try await store.delete(key: ["posts", authorId, postId])
     }
 
@@ -108,6 +118,15 @@ final class LibrettoStore: Sendable {
 
     func addComment(_ comment: Comment) async throws {
         try await store.set(key: ["comments", comment.postId, comment.id], value: comment)
+        // Comment-ID index for lookup by id alone (used by delete)
+        try await store.set(key: ["commentids", comment.id], value: "\(comment.postId)/\(comment.id)")
+    }
+
+    func getCommentById(_ commentId: String) async throws -> Comment? {
+        guard let ref: String = try await store.get(key: ["commentids", commentId]) else { return nil }
+        let parts = ref.split(separator: "/")
+        guard parts.count == 2 else { return nil }
+        return try await store.get(key: ["comments", String(parts[0]), String(parts[1])])
     }
 
     func listComments(postId: String) async throws -> [Comment] {
@@ -117,6 +136,7 @@ final class LibrettoStore: Sendable {
     }
 
     func deleteComment(postId: String, commentId: String) async throws {
+        try await store.delete(key: ["commentids", commentId])
         try await store.delete(key: ["comments", postId, commentId])
     }
 
