@@ -3,12 +3,14 @@ import Score
 struct Editor: Node {
     var body: some Node {
         Stack {
+            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-mono)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
+
             // Title input
             Input(type: .text, name: "title", placeholder: "Post title\u{2026}")
                 .htmlAttribute("id", "editor-title")
                 .padding(14)
                 .font(.serif, size: 22, weight: .light)
-                .htmlAttribute("style", "width:100%;box-sizing:border-box;border:1px solid var(--color-border);background:var(--color-bg);color:var(--color-text);")
+                .htmlAttribute("style", "width:100%;box-sizing:border-box;border:1px solid var(--color-border);background:var(--color-elevated);color:var(--color-text);")
 
             // Formatting toolbar
             Stack {
@@ -27,7 +29,7 @@ struct Editor: Node {
             Stack {
                 // Textarea
                 RawTextNode("""
-<textarea id="editor-body" placeholder="Write in Markdown\u{2026}" style="flex:1;min-width:0;height:480px;box-sizing:border-box;padding:14px;background:var(--color-bg);color:var(--color-text);border:1px solid var(--color-border);font-family:var(--font-mono);font-size:13px;line-height:1.6;resize:vertical;"></textarea>
+<textarea id="editor-body" placeholder="Write in Markdown\u{2026}" style="flex:1;min-width:0;height:480px;box-sizing:border-box;padding:14px;background:var(--color-elevated);color:var(--color-text);border:1px solid var(--color-border);font-family:var(--font-mono);font-size:13px;line-height:1.6;resize:vertical;"></textarea>
 """)
 
                 // Preview panel

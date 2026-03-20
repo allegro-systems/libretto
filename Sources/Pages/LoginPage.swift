@@ -5,6 +5,8 @@ struct LoginPage: Page {
 
     var body: some Node {
         Stack {
+            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-mono)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
+
             Section {
                 Heading(.one) { "Sign in to Libretto" }
                     .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text, align: .center)
