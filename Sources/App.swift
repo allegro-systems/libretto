@@ -31,6 +31,10 @@ struct LibrettoApp: Application {
     var pages: [any Page] {
         LandingPage()
         LoginPage()
+        PostPage()
+        BlogListPage()
+        BillingPage()
+        CheckoutPage()
     }
 
     var controllers: [any Controller] {
@@ -38,6 +42,7 @@ struct LibrettoApp: Application {
             AuthController(),
             PostController(),
             PublicPostController(),
+            BillingController(),
         ]
     }
 }
