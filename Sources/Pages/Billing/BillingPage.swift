@@ -10,163 +10,184 @@ struct BillingPage: Page {
     var body: some Node {
         Stack {
             // Header
-            Stack {
+            Section {
                 Heading(.one) { "Billing" }
-                    .font(.sans, size: 24, weight: .bold)
+                    .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text)
+                    .compact { $0.font(size: 36) }
+                    .animate(.fadeIn, duration: 0.6)
+
                 Paragraph { "Manage your plan and usage." }
-                    .font(.sans, size: 14)
+                    .font(.mono, size: 15, lineHeight: 1.6, color: .muted)
+                    .animate(.fadeIn, duration: 0.6, delay: 0.15)
             }
-            .flex(.column, gap: 4)
+            .flex(.column, gap: 28)
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
 
-            // Current Plan Card
-            Stack {
-                Stack {
-                    Heading(.two) { "Current Plan" }
-                        .font(.sans, size: 16, weight: .semibold)
-                    Stack {}
-                        .htmlAttribute("id", "billing-plan-badge")
-                }
-                .flex(.row, gap: 12, align: .center)
+            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
 
-                Paragraph { "Loading plan details..." }
-                    .htmlAttribute("id", "billing-plan-description")
-                    .font(.sans, size: 13)
-
-                // Upgrade button
-                Stack {
-                    Link(to: "/billing/checkout") {
-                        Text { "Upgrade to Pro" }
-                    }
-                    .font(.sans, size: 13, weight: .semibold, decoration: TextDecoration.none)
-                    .padding(8, at: .horizontal)
-                    .padding(6, at: .vertical)
-                    .background(.oklch(0.45, 0.18, 260))
-                    .radius(6)
-                }
-                .flex(.row, gap: 10)
-            }
-            .flex(.column, gap: 14)
-            .padding(24)
-            .radius(8)
-
-            // Feature comparison table
-            Stack {
-                Heading(.two) { "Plan Comparison" }
-                    .font(.sans, size: 16, weight: .semibold)
-
-                RawTextNode("""
-                <table style="width:100%;border-collapse:collapse;font-size:13px">
-                  <thead>
-                    <tr>
-                      <th style="text-align:left;padding:8px 0;border-bottom:1px solid #333">Feature</th>
-                      <th style="text-align:center;padding:8px 0;border-bottom:1px solid #333">Free</th>
-                      <th style="text-align:center;padding:8px 0;border-bottom:1px solid #333">Pro</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style="padding:8px 0;border-bottom:1px solid #222">Collections</td>
-                      <td style="text-align:center;padding:8px 0;border-bottom:1px solid #222">Up to 100</td>
-                      <td style="text-align:center;padding:8px 0;border-bottom:1px solid #222">Unlimited</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:8px 0;border-bottom:1px solid #222">Storage</td>
-                      <td style="text-align:center;padding:8px 0;border-bottom:1px solid #222">500 MB</td>
-                      <td style="text-align:center;padding:8px 0;border-bottom:1px solid #222">5 GB</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:8px 0;border-bottom:1px solid #222">Custom domain</td>
-                      <td style="text-align:center;padding:8px 0;border-bottom:1px solid #222">—</td>
-                      <td style="text-align:center;padding:8px 0;border-bottom:1px solid #222">✓</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:8px 0">Priority support</td>
-                      <td style="text-align:center;padding:8px 0">—</td>
-                      <td style="text-align:center;padding:8px 0">✓</td>
-                    </tr>
-                  </tbody>
-                </table>
-                """)
-            }
-            .flex(.column, gap: 14)
-            .padding(24)
-            .radius(8)
-
-            // Usage Section
-            Stack {
-                Heading(.two) { "Usage" }
-                    .font(.sans, size: 16, weight: .semibold)
-
-                // Collections usage bar
+            // Content
+            Section {
+                // Current Plan Card
                 Stack {
                     Stack {
-                        Text { "Collections" }
-                            .font(.sans, size: 13, weight: .medium)
-                        Text { "—" }
-                            .htmlAttribute("id", "usage-collections-label")
-                            .font(.sans, size: 12)
-                    }
-                    .flex(.row, gap: 0, align: .center, justify: .spaceBetween)
-
-                    Stack {
+                        Text { "CURRENT PLAN" }
+                            .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
                         Stack {}
-                            .htmlAttribute("id", "usage-collections-fill")
-                            .size(height: 6)
-                            .radius(3)
-                            .background(.oklch(0.45, 0.18, 260))
+                            .htmlAttribute("id", "billing-plan-badge")
                     }
-                    .size(height: 6)
-                    .radius(3)
-                }
-                .flex(.column, gap: 6)
+                    .flex(.row, gap: 12, align: .center)
 
-                // Storage usage bar
-                Stack {
+                    Paragraph { "Loading plan details..." }
+                        .htmlAttribute("id", "billing-plan-description")
+                        .font(.mono, size: 13, lineHeight: 1.6, color: .muted)
+
+                    // Upgrade button
                     Stack {
-                        Text { "Storage" }
-                            .font(.sans, size: 13, weight: .medium)
-                        Text { "—" }
-                            .htmlAttribute("id", "usage-storage-label")
-                            .font(.sans, size: 12)
+                        Link(to: "/billing/checkout") {
+                            Text { "Upgrade to Pro" }
+                        }
+                        .font(.mono, size: 13, weight: .medium, color: .bg, align: .center, decoration: TextDecoration.none)
+                        .padding(14, at: .vertical)
+                        .padding(28, at: .horizontal)
+                        .background(.accent)
+                        .hover { $0.opacity(0.85) }
                     }
-                    .flex(.row, gap: 0, align: .center, justify: .spaceBetween)
+                    .flex(.row, gap: 10)
+                }
+                .flex(.column, gap: 14)
+                .padding(24)
+                .background(.elevated)
+                .border(width: 1, color: .border, style: .solid)
+
+                // Feature comparison table
+                Stack {
+                    Text { "PLAN COMPARISON" }
+                        .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+
+                    RawTextNode("""
+                    <table style="width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:13px;color:var(--color-text)">
+                      <thead>
+                        <tr>
+                          <th style="text-align:left;padding:8px 0;border-bottom:1px solid var(--color-border);color:var(--color-muted)">Feature</th>
+                          <th style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border);color:var(--color-muted)">Free</th>
+                          <th style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border);color:var(--color-muted)">Pro</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="padding:8px 0;border-bottom:1px solid var(--color-border)">Collections</td>
+                          <td style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border)">Up to 100</td>
+                          <td style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border)">Unlimited</td>
+                        </tr>
+                        <tr>
+                          <td style="padding:8px 0;border-bottom:1px solid var(--color-border)">Storage</td>
+                          <td style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border)">500 MB</td>
+                          <td style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border)">5 GB</td>
+                        </tr>
+                        <tr>
+                          <td style="padding:8px 0;border-bottom:1px solid var(--color-border)">Custom domain</td>
+                          <td style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border)">\u{2014}</td>
+                          <td style="text-align:center;padding:8px 0;border-bottom:1px solid var(--color-border)">\u{2713}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding:8px 0">Priority support</td>
+                          <td style="text-align:center;padding:8px 0">\u{2014}</td>
+                          <td style="text-align:center;padding:8px 0">\u{2713}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    """)
+                }
+                .flex(.column, gap: 14)
+                .padding(24)
+                .background(.elevated)
+                .border(width: 1, color: .border, style: .solid)
+
+                // Usage Section
+                Stack {
+                    Text { "USAGE" }
+                        .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+
+                    // Collections usage bar
+                    Stack {
+                        Stack {
+                            Text { "Collections" }
+                                .font(.mono, size: 13, weight: .medium, color: .text)
+                            Text { "\u{2014}" }
+                                .htmlAttribute("id", "usage-collections-label")
+                                .font(.mono, size: 11, color: .muted)
+                        }
+                        .flex(.row, gap: 0, align: .center, justify: .spaceBetween)
+
+                        Stack {
+                            Stack {}
+                                .htmlAttribute("id", "usage-collections-fill")
+                                .size(height: 6)
+                                .radius(3)
+                                .background(.accent)
+                        }
+                        .size(height: 6)
+                        .radius(3)
+                    }
+                    .flex(.column, gap: 6)
+
+                    // Storage usage bar
+                    Stack {
+                        Stack {
+                            Text { "Storage" }
+                                .font(.mono, size: 13, weight: .medium, color: .text)
+                            Text { "\u{2014}" }
+                                .htmlAttribute("id", "usage-storage-label")
+                                .font(.mono, size: 11, color: .muted)
+                        }
+                        .flex(.row, gap: 0, align: .center, justify: .spaceBetween)
+
+                        Stack {
+                            Stack {}
+                                .htmlAttribute("id", "usage-storage-fill")
+                                .size(height: 6)
+                                .radius(3)
+                                .background(.accent)
+                        }
+                        .size(height: 6)
+                        .radius(3)
+                    }
+                    .flex(.column, gap: 6)
+                }
+                .flex(.column, gap: 16)
+                .padding(24)
+                .background(.elevated)
+                .border(width: 1, color: .border, style: .solid)
+
+                // Payment History Section
+                Stack {
+                    Text { "PAYMENT HISTORY" }
+                        .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
 
                     Stack {
-                        Stack {}
-                            .htmlAttribute("id", "usage-storage-fill")
-                            .size(height: 6)
-                            .radius(3)
-                            .background(.oklch(0.60, 0.18, 50))
+                        Paragraph { "No payment history yet." }
+                            .htmlAttribute("id", "payment-history-placeholder")
+                            .font(.mono, size: 13, color: .muted)
                     }
-                    .size(height: 6)
-                    .radius(3)
+                    .htmlAttribute("id", "payment-history-container")
                 }
-                .flex(.column, gap: 6)
+                .flex(.column, gap: 14)
+                .padding(24)
+                .background(.elevated)
+                .border(width: 1, color: .border, style: .solid)
             }
-            .flex(.column, gap: 16)
-            .padding(24)
-            .radius(8)
-
-            // Payment History Section
-            Stack {
-                Heading(.two) { "Payment History" }
-                    .font(.sans, size: 16, weight: .semibold)
-
-                Stack {
-                    Paragraph { "No payment history yet." }
-                        .htmlAttribute("id", "payment-history-placeholder")
-                        .font(.sans, size: 13)
-                }
-                .htmlAttribute("id", "payment-history-container")
-            }
-            .flex(.column, gap: 14)
-            .padding(24)
-            .radius(8)
+            .flex(.column, gap: 24)
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
 
             RawTextNode(billingScript)
         }
-        .flex(.column, gap: 24)
-        .padding(40)
+        .flex(.column, gap: 0)
+        .background(.bg)
+        .size(minHeight: .percent(100))
     }
 }
 
@@ -201,13 +222,13 @@ private let billingScript = """
   function makeBadge(plan) {
     var span = document.createElement('span');
     span.textContent = PLAN_LABELS[plan] || plan;
-    span.style.cssText = 'background:#333;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:capitalize';
+    span.style.cssText = 'background:var(--color-elevated);border:1px solid var(--color-border);font-family:var(--font-mono);font-size:11px;font-weight:500;padding:2px 8px;text-transform:capitalize;color:var(--color-text)';
     return span;
   }
 
   function buildPaymentRow(p) {
     var tr = document.createElement('tr');
-    var cellStyle = 'padding:8px 0;border-bottom:1px solid #222';
+    var cellStyle = 'padding:8px 0;border-bottom:1px solid var(--color-border)';
     var cells = [p.date || '', p.description || '', p.amount || '', p.status || ''];
     cells.forEach(function(text, i) {
       var td = document.createElement('td');
@@ -246,14 +267,14 @@ private let billingScript = """
         var container = document.getElementById('payment-history-container');
         if (container) {
           var table = document.createElement('table');
-          table.style.cssText = 'width:100%;border-collapse:collapse;font-size:13px';
+          table.style.cssText = 'width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:13px;color:var(--color-text)';
           var thead = document.createElement('thead');
           var headerRow = document.createElement('tr');
           ['Date', 'Description', 'Amount', 'Status'].forEach(function(text, i) {
             var th = document.createElement('th');
             th.textContent = text;
             th.style.cssText = 'text-align:' + (i >= 2 ? 'right' : 'left') +
-              ';padding:8px 0;border-bottom:1px solid #333';
+              ';padding:8px 0;border-bottom:1px solid var(--color-border);color:var(--color-muted)';
             headerRow.appendChild(th);
           });
           thead.appendChild(headerRow);

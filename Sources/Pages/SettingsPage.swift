@@ -5,13 +5,28 @@ struct SettingsPage: Page {
 
     var body: some Node {
         Stack {
-            Heading(.one) { "Settings" }
-                .font(.sans, size: 28, weight: .bold)
+            // Header
+            Section {
+                Heading (.one) { "Settings" }
+                    .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text)
+                    .compact { $0.font(size: 36) }
+                    .animate(.fadeIn, duration: 0.6)
+
+                Paragraph { "Manage your profile and preferences." }
+                    .font(.mono, size: 15, lineHeight: 1.6, color: .muted)
+                    .animate(.fadeIn, duration: 0.6, delay: 0.15)
+            }
+            .flex(.column, gap: 28)
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
+
+            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
 
             // Profile form
-            Stack {
-                Heading(.two) { "Profile" }
-                    .font(.sans, size: 18, weight: .semibold)
+            Section {
+                Text { "PROFILE" }
+                    .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
 
                 // Display name
                 formField(label: "Display Name", inputId: "settings-displayName", type: .text, placeholder: "Your name")
@@ -21,16 +36,16 @@ struct SettingsPage: Page {
 
                 // Bio
                 Stack {
-                    RawTextNode("<label for=\"settings-bio\" style=\"font-size:14px;font-weight:500\">Bio</label>")
-                    RawTextNode("<textarea id=\"settings-bio\" rows=\"3\" placeholder=\"A short bio\" style=\"padding:10px;font-size:14px;font-family:system-ui,-apple-system,sans-serif;border:1px solid oklch(0.85 0.015 260);border-radius:8px;width:100%;box-sizing:border-box;resize:vertical\"></textarea>")
+                    RawTextNode("<label for=\"settings-bio\" style=\"font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">Bio</label>")
+                    RawTextNode("<textarea id=\"settings-bio\" rows=\"3\" placeholder=\"A short bio\" style=\"padding:14px;font-family:var(--font-mono);font-size:13px;color:var(--color-text);background:var(--color-bg);border:1px solid var(--color-border);width:100%;box-sizing:border-box;resize:vertical\"></textarea>")
                 }
-                .flex(.column, gap: 6)
+                .flex(.column, gap: 8)
 
                 // Email
                 formField(label: "Email", inputId: "settings-email", type: .email, placeholder: "you@example.com")
 
-                Heading(.two) { "Social Links" }
-                    .font(.sans, size: 16, weight: .semibold)
+                Text { "SOCIAL LINKS" }
+                    .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
 
                 formField(label: "GitHub URL", inputId: "settings-github", type: .text, placeholder: "https://github.com/username")
                 formField(label: "Twitter / X URL", inputId: "settings-twitter", type: .text, placeholder: "https://x.com/username")
@@ -39,35 +54,42 @@ struct SettingsPage: Page {
                 // Status message
                 Paragraph { "" }
                     .htmlAttribute("id", "settings-status")
-                    .font(.sans, size: 13)
+                    .font(.mono, size: 13, color: .muted)
 
                 // Save button
                 Button(type: .button) {
                     Text { "Save Changes" }
                 }
                 .htmlAttribute("id", "settings-save-btn")
-                .padding(10, at: .horizontal)
-                .padding(10, at: .vertical)
-                .font(.sans, size: 14, weight: .medium)
+                .font(.mono, size: 13, weight: .medium, color: .bg)
+                .padding(14, at: .vertical)
+                .padding(28, at: .horizontal)
+                .background(.accent)
+                .hover { $0.opacity(0.85) }
             }
             .flex(.column, gap: 16)
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .size(maxWidth: 740)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
 
             RawTextNode(settingsScript)
         }
-        .flex(.column, gap: 24)
-        .padding(40)
+        .flex(.column, gap: 0)
+        .background(.bg)
+        .size(minHeight: .percent(100))
     }
 
     private func formField(label: String, inputId: String, type: InputType, placeholder: String) -> some Node {
         Stack {
-            RawTextNode("<label for=\"\(inputId)\" style=\"font-size:14px;font-weight:500\">\(label)</label>")
+            RawTextNode("<label for=\"\(inputId)\" style=\"font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">\(label)</label>")
             Input(type: type, name: inputId.replacingOccurrences(of: "settings-", with: ""), placeholder: placeholder)
                 .htmlAttribute("id", inputId)
-                .padding(10)
-                .font(.sans, size: 14)
-                .htmlAttribute("style", "border:1px solid oklch(0.85 0.015 260);border-radius:8px;width:100%;box-sizing:border-box")
+                .padding(14)
+                .font(.mono, size: 13)
+                .border(width: 1, color: .border, style: .solid)
         }
-        .flex(.column, gap: 6)
+        .flex(.column, gap: 8)
     }
 }
 

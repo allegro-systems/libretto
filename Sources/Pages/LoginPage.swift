@@ -5,62 +5,96 @@ struct LoginPage: Page {
 
     var body: some Node {
         Stack {
-            // Header
-            Heading(.one) { "Sign in to Libretto" }
-                .font(.sans, size: 28, weight: .bold)
+            Section {
+                Heading(.one) { "Sign in to Libretto" }
+                    .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text, align: .center)
+                    .size(maxWidth: 740)
+                    .compact { $0.font(size: 36) }
+                    .animate(.fadeIn, duration: 0.6)
 
-            // Magic link form
-            Stack {
-                Heading(.two) { "Email" }
-                    .font(.sans, size: 18, weight: .semibold)
+                Paragraph { "Enter your email to get started." }
+                    .font(.mono, size: 15, lineHeight: 1.6, color: .muted, align: .center)
+                    .size(maxWidth: 580)
+                    .compact { $0.font(size: 13) }
+                    .animate(.fadeIn, duration: 0.6, delay: 0.15)
+            }
+            .flex(.column, gap: 28, align: .center)
+            .padding(120, at: .vertical)
+            .padding(56, at: .horizontal)
+            .backgroundGradient(.radial(color: .libretto, opacity: 0.04, width: 120, height: 80, at: .top))
+            .compact { $0.padding(80, at: .vertical).padding(20, at: .horizontal) }
+
+            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
+
+            // Login form
+            Section {
+                Stack {
+                    Text { "EMAIL" }
+                        .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+
+                    Stack {
+                        Input(type: .email, name: "email", placeholder: "you@example.com")
+                            .htmlAttribute("id", "magic-link-email")
+                            .padding(14)
+                            .font(.mono, size: 13)
+                            .border(width: 1, color: .border, style: .solid)
+
+                        Button(type: .button) {
+                            Text { "Send Magic Link" }
+                        }
+                        .htmlAttribute("id", "magic-link-btn")
+                        .font(.mono, size: 13, weight: .medium, color: .bg)
+                        .padding(14, at: .vertical)
+                        .padding(28, at: .horizontal)
+                        .background(.accent)
+                        .hover { $0.opacity(0.85) }
+                    }
+                    .flex(.row, gap: 12)
+                    .compact { $0.flex(.column, gap: 12) }
+
+                    Paragraph { "" }
+                        .htmlAttribute("id", "magic-link-status")
+                        .font(.mono, size: 13, color: .muted)
+                }
+                .flex(.column, gap: 16)
+                .size(maxWidth: 580)
+
+                HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
 
                 Stack {
-                    Input(type: .email, name: "email", placeholder: "you@example.com")
-                        .htmlAttribute("id", "magic-link-email")
-                        .padding(10)
-                        .font(.sans, size: 14)
-
                     Button(type: .button) {
-                        Text { "Send Magic Link" }
+                        Text { "Sign in with Passkey" }
                     }
-                    .htmlAttribute("id", "magic-link-btn")
-                    .padding(10, at: .horizontal)
-                    .padding(10, at: .vertical)
-                    .font(.sans, size: 14, weight: .medium)
+                    .htmlAttribute("disabled", "true")
+                    .font(.mono, size: 13, weight: .medium, color: .text)
+                    .padding(14, at: .vertical)
+                    .padding(28, at: .horizontal)
+                    .border(width: 1, color: .border, style: .solid)
+                    .opacity(0.5)
+
+                    Link(to: "/auth/oauth/github/login") {
+                        Text { "Sign in with GitHub" }
+                    }
+                    .font(.mono, size: 13, weight: .medium, color: .text, align: .center, decoration: TextDecoration.none)
+                    .padding(14, at: .vertical)
+                    .padding(28, at: .horizontal)
+                    .border(width: 1, color: .border, style: .solid)
+                    .hover { $0.background(.elevated) }
                 }
-                .flex(.row, gap: 8)
-
-                Paragraph { "" }
-                    .htmlAttribute("id", "magic-link-status")
-                    .font(.sans, size: 13)
+                .flex(.column, gap: 12, align: .center)
+                .size(maxWidth: 580)
             }
-            .flex(.column, gap: 12)
-
-            // Divider
-            RawTextNode("<hr style=\"border:none;border-top:1px solid #333;margin:16px 0\">")
-
-            // Passkey (stub)
-            Button(type: .button) {
-                Text { "Sign in with Passkey" }
-            }
-            .htmlAttribute("disabled", "true")
-            .padding(10, at: .horizontal)
-            .padding(10, at: .vertical)
-            .font(.sans, size: 14, weight: .medium)
-
-            // GitHub OAuth
-            Link(to: "/auth/oauth/github/login") {
-                Text { "Sign in with GitHub" }
-            }
-            .font(.sans, size: 14, weight: .medium, decoration: TextDecoration.none)
-            .padding(10, at: .horizontal)
-            .padding(10, at: .vertical)
+            .flex(.column, gap: 28, align: .center)
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
 
             // Client-side JS for magic link
             RawTextNode(loginScript)
         }
-        .flex(.column, gap: 16)
-        .padding(40)
+        .flex(.column, gap: 0)
+        .background(.bg)
+        .size(minHeight: .percent(100))
     }
 }
 

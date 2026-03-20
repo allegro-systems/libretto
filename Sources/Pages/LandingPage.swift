@@ -5,50 +5,67 @@ struct LandingPage: Page {
 
     var body: some Node {
         Stack {
-            // Hero section
-            Stack {
+            // Hero
+            Section {
                 Heading(.one) { "Libretto" }
-                    .font(.serif, size: 56, weight: .light, color: .text)
+                    .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text, align: .center)
+                    .size(maxWidth: 740)
+                    .compact { $0.font(size: 36) }
+                    .animate(.fadeIn, duration: 0.6)
 
-                Paragraph { "Write. Publish. Connect." }
-                    .font(.mono, size: 18, color: .muted)
+                Paragraph { "A place to write, publish, and connect." }
+                    .font(.mono, size: 15, lineHeight: 1.6, color: .muted, align: .center)
+                    .size(maxWidth: 580)
+                    .compact { $0.font(size: 13) }
+                    .animate(.fadeIn, duration: 0.6, delay: 0.15)
 
                 Stack {
                     Link(to: "/login") { "Start Writing" }
-                        .font(.sans, size: 16, weight: .semibold, color: .bg, decoration: TextDecoration.none)
-                        .padding(12, at: .vertical)
-                        .padding(24, at: .horizontal)
+                        .font(.mono, size: 13, weight: .medium, color: .bg, align: .center, decoration: TextDecoration.none)
+                        .padding(14, at: .vertical)
+                        .padding(28, at: .horizontal)
                         .background(.accent)
-                        .radius(8)
+                        .hover { $0.opacity(0.85) }
 
                     Link(to: "/blog") { "Read Blog" }
-                        .font(.sans, size: 16, weight: .semibold, color: .text, decoration: TextDecoration.none)
-                        .padding(12, at: .vertical)
-                        .padding(24, at: .horizontal)
+                        .font(.mono, size: 13, weight: .medium, color: .text, align: .center, decoration: TextDecoration.none)
+                        .padding(14, at: .vertical)
+                        .padding(28, at: .horizontal)
                         .border(width: 1, color: .border, style: .solid)
-                        .radius(8)
+                        .hover { $0.background(.elevated) }
                 }
-                .flex(.row, gap: 16)
+                .flex(.row, gap: 16, align: .center)
+                .compact { $0.flex(.column, gap: 12).size(width: .percent(100)) }
+                .animate(.fadeIn, duration: 0.6, delay: 0.3)
             }
-            .flex(.column, gap: 20)
-            .padding(80, at: .vertical)
-            .htmlAttribute("style", "align-items:center;text-align:center;")
+            .flex(.column, gap: 28, align: .center)
+            .padding(120, at: .vertical)
+            .padding(56, at: .horizontal)
+            .backgroundGradient(.radial(color: .libretto, opacity: 0.04, width: 120, height: 80, at: .top))
+            .compact { $0.padding(80, at: .vertical).padding(20, at: .horizontal) }
 
-            // Featured posts section
-            Stack {
-                Heading(.two) { "Recent Posts" }
-                    .font(.sans, size: 28, weight: .bold)
+            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
+
+            // Recent Posts
+            Section {
+                Text { "RECENT POSTS" }
+                    .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+                    .animateOnScroll(.fadeIn)
 
                 Stack {}
                     .htmlAttribute("id", "landing-posts-root")
+                    .animateOnScroll(.slideUp, duration: 0.5)
 
                 RawTextNode(landingPostsScript)
             }
             .flex(.column, gap: 24)
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
         }
         .flex(.column, gap: 0)
-        .padding(40)
-        .htmlAttribute("style", "max-width:900px;margin:0 auto;")
+        .background(.bg)
+        .size(minHeight: .percent(100))
     }
 }
 
@@ -58,6 +75,7 @@ private let landingPostsScript = """
   var root = document.getElementById('landing-posts-root');
   if (!root) return;
 
+  root.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
   root.textContent = 'Loading posts...';
 
   fetch('/api/public/posts')
@@ -69,8 +87,8 @@ private let landingPostsScript = """
       root.textContent = '';
 
       if (!posts || posts.length === 0) {
-        root.style.cssText = 'color:#888;font-size:15px;';
-        root.textContent = 'No posts yet — be the first to write something.';
+        root.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
+        root.textContent = 'No posts yet \\u2014 be the first to write something.';
         return;
       }
 
@@ -80,7 +98,7 @@ private let landingPostsScript = """
 
       top6.forEach(function(post) {
         var card = document.createElement('div');
-        card.style.cssText = 'padding:20px;background:var(--color-elevated,#f7f7f9);border-radius:8px;display:flex;flex-direction:column;gap:8px;';
+        card.style.cssText = 'background:var(--color-elevated);border:1px solid var(--color-border);border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:8px;';
 
         var pub = post.publishedAt
           ? new Date(post.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -91,17 +109,17 @@ private let landingPostsScript = """
 
         var titleLink = document.createElement('a');
         titleLink.href = '/@' + encodeURIComponent(post.authorId) + '/' + encodeURIComponent(post.slug);
-        titleLink.style.cssText = 'font-size:18px;font-weight:600;text-decoration:none;color:inherit;';
+        titleLink.style.cssText = 'font-family:var(--font-serif);font-size:20px;font-weight:300;color:var(--color-text);text-decoration:none;';
         titleLink.textContent = post.title;
         card.appendChild(titleLink);
 
         var excerptEl = document.createElement('p');
-        excerptEl.style.cssText = 'font-size:14px;color:#666;margin:0;flex:1;';
+        excerptEl.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);margin:0;flex:1;line-height:1.6;';
         excerptEl.textContent = excerpt;
         card.appendChild(excerptEl);
 
         var meta = document.createElement('div');
-        meta.style.cssText = 'display:flex;gap:6px;align-items:center;font-size:12px;color:#888;flex-wrap:wrap;margin-top:4px;';
+        meta.style.cssText = 'display:flex;gap:6px;align-items:center;font-family:var(--font-mono);font-size:11px;color:var(--color-muted);flex-wrap:wrap;margin-top:4px;';
 
         var authorSpan = document.createElement('span');
         authorSpan.textContent = post.authorId;
@@ -131,7 +149,7 @@ private let landingPostsScript = """
       root.appendChild(grid);
     })
     .catch(function() {
-      root.style.cssText = 'color:#888;font-size:15px;';
+      root.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
       root.textContent = 'Could not load posts.';
     });
 })();

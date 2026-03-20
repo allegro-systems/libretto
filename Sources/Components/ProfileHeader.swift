@@ -15,17 +15,17 @@ struct ProfileHeader: Node {
             // Name + username
             Stack {
                 Heading(.two) { displayName }
-                    .font(.sans, size: 24, weight: .bold, color: .text)
+                    .font(.serif, size: 22, weight: .light, color: .text)
 
                 Paragraph { "@\(username)" }
-                    .font(.sans, size: 14, color: .muted)
+                    .font(.mono, size: 13, color: .muted)
             }
             .flex(.column, gap: 4)
 
             // Bio
             if let bio, !bio.isEmpty {
                 Paragraph { bio }
-                    .font(.sans, size: 15, color: .text)
+                    .font(.mono, size: 13, lineHeight: 1.6, color: .muted)
             }
 
             // Social links
@@ -46,9 +46,9 @@ struct ProfileHeader: Node {
             let initials = String(displayName.prefix(1)).uppercased()
             Stack {
                 Text { initials }
-                    .font(.sans, size: 28, weight: .bold, color: .surface)
+                    .font(.mono, size: 28, weight: .medium, color: .bg)
             }
-            .htmlAttribute("style", "width:72px;height:72px;border-radius:50%;background:oklch(0.50 0.18 280);display:flex;align-items:center;justify-content:center;")
+            .htmlAttribute("style", "width:72px;height:72px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;")
         }
     }
 }

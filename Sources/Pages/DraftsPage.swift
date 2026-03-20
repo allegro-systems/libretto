@@ -5,32 +5,55 @@ struct DraftsPage: Page {
 
     var body: some Node {
         Stack {
-            // Header row
-            Stack {
-                Heading(.one) { "My Drafts" }
-                    .font(.sans, size: 26, weight: .bold)
+            // Header
+            Section {
+                Stack {
+                    Heading(.one) { "My Drafts" }
+                        .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text)
+                        .compact { $0.font(size: 36) }
+                        .animate(.fadeIn, duration: 0.6)
 
-                Link(to: "/write") {
-                    Text { "+ New Post" }
+                    Link(to: "/write") {
+                        Text { "+ New Post" }
+                    }
+                    .font(.mono, size: 13, weight: .medium, color: .bg, align: .center, decoration: TextDecoration.none)
+                    .padding(14, at: .vertical)
+                    .padding(28, at: .horizontal)
+                    .background(.accent)
+                    .hover { $0.opacity(0.85) }
+                    .animate(.fadeIn, duration: 0.6, delay: 0.15)
                 }
-                .font(.sans, size: 14, weight: .medium, decoration: TextDecoration.none)
-                .htmlAttribute("style", "color:#7eb8f7;")
+                .flex(.row, gap: 24, align: .center, justify: .spaceBetween)
+                .compact { $0.flex(.column, gap: 16, align: .start) }
             }
-            .flex(.row, gap: 16)
-            .htmlAttribute("style", "align-items:baseline;")
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
 
-            // Draft list container
-            RawTextNode("<div id=\"drafts-list\" style=\"display:flex;flex-direction:column;gap:12px;\"></div>")
+            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
 
-            Paragraph { "" }
-                .htmlAttribute("id", "drafts-status")
-                .font(.sans, size: 13)
-                .htmlAttribute("style", "color:#aaa;margin:0;")
+            // Draft list
+            Section {
+                Text { "DRAFTS" }
+                    .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+                    .animateOnScroll(.fadeIn)
 
-            RawTextNode(draftsScript)
+                RawTextNode("<div id=\"drafts-list\" style=\"display:flex;flex-direction:column;gap:12px;\"></div>")
+
+                Paragraph { "" }
+                    .htmlAttribute("id", "drafts-status")
+                    .font(.mono, size: 13, color: .muted)
+
+                RawTextNode(draftsScript)
+            }
+            .flex(.column, gap: 24)
+            .padding(80, at: .vertical)
+            .padding(56, at: .horizontal)
+            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
         }
-        .flex(.column, gap: 24)
-        .padding(40)
+        .flex(.column, gap: 0)
+        .background(.bg)
+        .size(minHeight: .percent(100))
     }
 }
 
@@ -47,17 +70,17 @@ private let draftsScript = #"""
 
   function makeDraftRow(post) {
     var item = document.createElement('div');
-    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#111;border:1px solid #333;border-radius:6px;gap:12px;';
+    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:var(--color-elevated);border:1px solid var(--color-border);border-radius:8px;padding:24px;gap:12px;';
 
     var left = document.createElement('div');
     left.style.cssText = 'display:flex;flex-direction:column;gap:4px;min-width:0;';
 
     var titleEl = document.createElement('span');
-    titleEl.style.cssText = 'font-size:16px;font-weight:600;color:#eee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    titleEl.style.cssText = 'font-family:var(--font-serif);font-size:20px;font-weight:300;color:var(--color-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
     titleEl.textContent = post.title || '(Untitled)';
 
     var metaEl = document.createElement('span');
-    metaEl.style.cssText = 'font-size:12px;color:#666;';
+    metaEl.style.cssText = 'font-family:var(--font-mono);font-size:11px;color:var(--color-muted);';
     metaEl.textContent = 'Updated ' + formatDate(post.updatedAt) + ' \u00b7 ' + (post.wordCount || 0) + ' words';
 
     left.appendChild(titleEl);
@@ -69,7 +92,7 @@ private let draftsScript = #"""
     var editLink = document.createElement('a');
     editLink.href = '/write/' + String(post.id || '');
     editLink.textContent = 'Edit';
-    editLink.style.cssText = 'font-size:13px;color:#7eb8f7;text-decoration:none;padding:4px 10px;border:1px solid #444;border-radius:3px;';
+    editLink.style.cssText = 'font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--color-text);text-decoration:none;padding:14px 28px;border:1px solid var(--color-border);';
 
     right.appendChild(editLink);
     item.appendChild(left);

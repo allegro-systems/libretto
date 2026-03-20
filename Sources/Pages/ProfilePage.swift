@@ -5,18 +5,22 @@ struct ProfilePage: Page {
 
     var body: some Node {
         Stack {
-            // Profile header — populated by JS
+            // Profile header -- populated by JS
             Stack {}
                 .htmlAttribute("id", "profile-header")
 
-            // Posts list — populated by JS
+            // Posts list -- populated by JS
             Stack {}
                 .htmlAttribute("id", "profile-posts")
 
             RawTextNode(profileScript)
         }
         .flex(.column, gap: 24)
-        .padding(40)
+        .background(.bg)
+        .size(minHeight: .percent(100))
+        .padding(80, at: .vertical)
+        .padding(56, at: .horizontal)
+        .compact { $0.padding(40, at: .vertical).padding(20, at: .horizontal) }
     }
 }
 
@@ -26,7 +30,7 @@ private let profileScript = """
   var username = (window.location.pathname.match(/^\\/@([^/]+)/) || [])[1];
   if (!username) return;
 
-  document.title = '@' + username + ' — Libretto';
+  document.title = '@' + username + ' \\u2014 Libretto';
 
   fetch('/api/profile/' + encodeURIComponent(username))
     .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
@@ -39,7 +43,7 @@ private let profileScript = """
     .catch(function() {
       var el = document.getElementById('profile-header');
       var msg = document.createElement('p');
-      msg.style.color = 'oklch(0.55 0.22 25)';
+      msg.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
       msg.textContent = 'Profile not found.';
       el.appendChild(msg);
     });
@@ -57,7 +61,7 @@ private let profileScript = """
       header.appendChild(img);
     } else {
       var av = document.createElement('div');
-      av.style.cssText = 'width:72px;height:72px;border-radius:50%;background:oklch(0.50 0.18 280);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff';
+      av.style.cssText = 'width:72px;height:72px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:28px;font-weight:500;color:var(--color-bg)';
       av.textContent = (p.displayName || '?')[0].toUpperCase();
       header.appendChild(av);
     }
@@ -65,10 +69,10 @@ private let profileScript = """
     // Name block
     var nameBlock = document.createElement('div');
     var h2 = document.createElement('h2');
-    h2.style.cssText = 'margin:0;font-size:24px;font-weight:700';
+    h2.style.cssText = 'margin:0;font-family:var(--font-serif);font-size:22px;font-weight:300;color:var(--color-text)';
     h2.textContent = p.displayName || '';
     var handle = document.createElement('p');
-    handle.style.cssText = 'margin:0;font-size:14px;color:oklch(0.55 0.02 260)';
+    handle.style.cssText = 'margin:0;font-family:var(--font-mono);font-size:13px;color:var(--color-muted)';
     handle.textContent = '@' + (p.username || '');
     nameBlock.appendChild(h2);
     nameBlock.appendChild(handle);
@@ -77,7 +81,7 @@ private let profileScript = """
     // Bio
     if (p.bio) {
       var bio = document.createElement('p');
-      bio.style.cssText = 'font-size:15px;margin:0';
+      bio.style.cssText = 'font-family:var(--font-mono);font-size:13px;line-height:1.6;color:var(--color-muted);margin:0';
       bio.textContent = p.bio;
       header.appendChild(bio);
     }
@@ -96,7 +100,7 @@ private let profileScript = """
         a.textContent = label;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
-        a.style.cssText = 'font-size:13px;color:oklch(0.50 0.18 280);text-decoration:none';
+        a.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-accent);text-decoration:none';
         linksRow.appendChild(a);
       });
       header.appendChild(linksRow);
@@ -107,29 +111,29 @@ private let profileScript = """
     var el = document.getElementById('profile-posts');
     if (!posts || posts.length === 0) {
       var msg = document.createElement('p');
-      msg.style.color = 'oklch(0.55 0.02 260)';
+      msg.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
       msg.textContent = 'No published posts yet.';
       el.appendChild(msg);
       return;
     }
     var heading = document.createElement('h3');
-    heading.style.cssText = 'font-size:18px;font-weight:600;margin:0 0 12px';
+    heading.style.cssText = 'font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--color-muted);margin:0 0 12px';
     heading.textContent = 'Posts';
     el.appendChild(heading);
 
     posts.forEach(function(post) {
       var card = document.createElement('div');
-      card.style.cssText = 'border-bottom:1px solid oklch(0.85 0.015 260);padding:16px 0';
+      card.style.cssText = 'border-bottom:1px solid var(--color-border);padding:16px 0';
 
       var a = document.createElement('a');
       a.href = '/' + (post.slug || '');
-      a.style.cssText = 'font-size:17px;font-weight:600;color:inherit;text-decoration:none';
+      a.style.cssText = 'font-family:var(--font-serif);font-size:20px;font-weight:300;color:var(--color-text);text-decoration:none';
       a.textContent = post.title || '';
       card.appendChild(a);
 
       if (post.publishedAt) {
         var date = document.createElement('p');
-        date.style.cssText = 'margin:4px 0 0;font-size:13px;color:oklch(0.55 0.02 260)';
+        date.style.cssText = 'margin:4px 0 0;font-family:var(--font-mono);font-size:11px;color:var(--color-muted)';
         date.textContent = new Date(post.publishedAt).toLocaleDateString();
         card.appendChild(date);
       }

@@ -14,7 +14,7 @@ struct PostCard: Node {
         let stripped = postBody.trimmingCharacters(in: .whitespacesAndNewlines)
         guard stripped.count > 160 else { return stripped }
         let idx = stripped.index(stripped.startIndex, offsetBy: 160)
-        return String(stripped[..<idx]) + "…"
+        return String(stripped[..<idx]) + "\u{2026}"
     }
 
     var body: some Node {
@@ -22,37 +22,37 @@ struct PostCard: Node {
             Link(to: "/@\(username)/\(slug)") {
                 Text { title }
             }
-            .font(.sans, size: 18, weight: .semibold, decoration: TextDecoration.none)
+            .font(.serif, size: 22, weight: .light, color: .text, decoration: TextDecoration.none)
 
             Paragraph { excerpt }
-                .font(.sans, size: 14, color: .muted)
+                .font(.mono, size: 13, lineHeight: 1.6, color: .muted)
 
             Stack {
                 Text { authorName }
-                    .font(.sans, size: 13)
+                    .font(.mono, size: 11, color: .muted)
 
-                Text { "·" }
-                    .font(.sans, size: 13, color: .muted)
+                Text { "\u{00b7}" }
+                    .font(.mono, size: 11, color: .muted)
 
                 Text { publishedAt }
-                    .font(.sans, size: 13, color: .muted)
+                    .font(.mono, size: 11, color: .muted)
 
-                Text { "·" }
-                    .font(.sans, size: 13, color: .muted)
+                Text { "\u{00b7}" }
+                    .font(.mono, size: 11, color: .muted)
 
                 ReadTime(minutes: readMinutes)
 
-                Text { "·" }
-                    .font(.sans, size: 13, color: .muted)
+                Text { "\u{00b7}" }
+                    .font(.mono, size: 11, color: .muted)
 
                 Text { "\(likeCount) likes" }
-                    .font(.sans, size: 13, color: .muted)
+                    .font(.mono, size: 11, color: .muted)
             }
             .flex(.row, gap: 6)
         }
         .flex(.column, gap: 8)
-        .padding(20)
-        .background(ColorToken("elevated"))
-        .radius(8)
+        .padding(24)
+        .background(.elevated)
+        .border(width: 1, color: .border, style: .solid)
     }
 }

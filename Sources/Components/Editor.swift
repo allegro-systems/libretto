@@ -4,11 +4,11 @@ struct Editor: Node {
     var body: some Node {
         Stack {
             // Title input
-            Input(type: .text, name: "title", placeholder: "Post title…")
+            Input(type: .text, name: "title", placeholder: "Post title\u{2026}")
                 .htmlAttribute("id", "editor-title")
-                .padding(12)
-                .font(.sans, size: 22, weight: .bold)
-                .htmlAttribute("style", "width:100%;box-sizing:border-box;border:1px solid #333;background:#111;color:#eee;border-radius:4px;")
+                .padding(14)
+                .font(.serif, size: 22, weight: .light)
+                .htmlAttribute("style", "width:100%;box-sizing:border-box;border:1px solid var(--color-border);background:var(--color-bg);color:var(--color-text);")
 
             // Formatting toolbar
             Stack {
@@ -27,19 +27,18 @@ struct Editor: Node {
             Stack {
                 // Textarea
                 RawTextNode("""
-<textarea id="editor-body" placeholder="Write in Markdown…" style="flex:1;min-width:0;height:480px;box-sizing:border-box;padding:12px;background:#111;color:#eee;border:1px solid #333;border-radius:4px;font-family:monospace;font-size:14px;resize:vertical;"></textarea>
+<textarea id="editor-body" placeholder="Write in Markdown\u{2026}" style="flex:1;min-width:0;height:480px;box-sizing:border-box;padding:14px;background:var(--color-bg);color:var(--color-text);border:1px solid var(--color-border);font-family:var(--font-mono);font-size:13px;line-height:1.6;resize:vertical;"></textarea>
 """)
 
                 // Preview panel
                 Stack {
-                    Heading(.three) { "Preview" }
-                        .font(.sans, size: 13, weight: .semibold)
-                        .htmlAttribute("style", "color:#888;margin-bottom:8px;")
+                    Text { "PREVIEW" }
+                        .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
                     RawTextNode("""
-<div id="editor-preview" style="min-height:480px;padding:12px;background:#0d0d0d;border:1px solid #333;border-radius:4px;color:#eee;font-family:serif;font-size:15px;line-height:1.7;overflow-y:auto;word-break:break-word;"></div>
+<div id="editor-preview" style="min-height:480px;padding:14px;background:var(--color-elevated);border:1px solid var(--color-border);color:var(--color-text);font-family:var(--font-serif);font-size:15px;line-height:1.7;overflow-y:auto;word-break:break-word;"></div>
 """)
                 }
-                .flex(.column, gap: 0)
+                .flex(.column, gap: 8)
                 .htmlAttribute("style", "flex:1;min-width:0;")
             }
             .flex(.row, gap: 16)
@@ -49,20 +48,23 @@ struct Editor: Node {
             Stack {
                 Button(type: .button) { Text { "Save Draft" } }
                     .htmlAttribute("id", "btn-save-draft")
-                    .padding(10, at: .horizontal)
-                    .padding(10, at: .vertical)
-                    .font(.sans, size: 14, weight: .medium)
+                    .font(.mono, size: 13, weight: .medium, color: .text)
+                    .padding(14, at: .vertical)
+                    .padding(28, at: .horizontal)
+                    .border(width: 1, color: .border, style: .solid)
+                    .hover { $0.background(.elevated) }
 
                 Button(type: .button) { Text { "Publish" } }
                     .htmlAttribute("id", "btn-publish")
-                    .padding(10, at: .horizontal)
-                    .padding(10, at: .vertical)
-                    .font(.sans, size: 14, weight: .medium)
+                    .font(.mono, size: 13, weight: .medium, color: .bg)
+                    .padding(14, at: .vertical)
+                    .padding(28, at: .horizontal)
+                    .background(.accent)
+                    .hover { $0.opacity(0.85) }
 
                 Paragraph { "" }
                     .htmlAttribute("id", "editor-status")
-                    .font(.sans, size: 13)
-                    .htmlAttribute("style", "color:#aaa;margin:0;")
+                    .font(.mono, size: 13, color: .muted)
             }
             .flex(.row, gap: 12)
             .htmlAttribute("style", "align-items:center;")
@@ -78,10 +80,10 @@ struct Editor: Node {
         Button(type: .button) { Text { label } }
             .htmlAttribute("id", id)
             .htmlAttribute("title", title)
+            .font(.mono, size: 13, weight: .medium, color: .muted)
             .padding(6, at: .horizontal)
             .padding(6, at: .vertical)
-            .font(.sans, size: 13, weight: .medium)
-            .htmlAttribute("style", "background:#1e1e1e;border:1px solid #444;border-radius:3px;color:#ccc;cursor:pointer;")
+            .htmlAttribute("style", "background:var(--color-elevated);border:1px solid var(--color-border);cursor:pointer;")
     }
 }
 
@@ -112,7 +114,7 @@ private let editorScript = #"""
       // Fenced code block
       if (line.startsWith('```')) {
         if (inPre) {
-          out.push('<pre style="background:#1a1a1a;padding:10px;border-radius:4px;overflow:auto;"><code>' + escHtml(preBuf.join('\n')) + '</code></pre>');
+          out.push('<pre style="background:var(--color-elevated);padding:10px;overflow:auto;"><code>' + escHtml(preBuf.join('\n')) + '</code></pre>');
           preBuf = []; inPre = false;
         } else { inPre = true; }
         continue;
@@ -131,7 +133,7 @@ private let editorScript = #"""
 
       // Blockquote
       if (esc.startsWith('&gt; ')) {
-        out.push('<blockquote style="border-left:3px solid #555;padding-left:12px;color:#aaa;margin:8px 0;">' + inlineFormat(esc.slice(5)) + '</blockquote>');
+        out.push('<blockquote style="border-left:3px solid var(--color-border);padding-left:12px;color:var(--color-muted);margin:8px 0;">' + inlineFormat(esc.slice(5)) + '</blockquote>');
         continue;
       }
 
@@ -155,7 +157,7 @@ private let editorScript = #"""
     }
 
     if (inPre) {
-      out.push('<pre style="background:#1a1a1a;padding:10px;border-radius:4px;overflow:auto;"><code>' + escHtml(preBuf.join('\n')) + '</code></pre>');
+      out.push('<pre style="background:var(--color-elevated);padding:10px;overflow:auto;"><code>' + escHtml(preBuf.join('\n')) + '</code></pre>');
     }
 
     return out.join('\n');
@@ -166,8 +168,8 @@ private let editorScript = #"""
       .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`([^`]+)`/g, '<code style="background:#1a1a1a;padding:2px 4px;border-radius:2px;">$1</code>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#7eb8f7;">$1</a>');
+      .replace(/`([^`]+)`/g, '<code style="background:var(--color-elevated);padding:2px 4px;">$1</code>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--color-accent);">$1</a>');
   }
 
   // ---------- Live preview ----------

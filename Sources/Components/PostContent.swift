@@ -11,22 +11,23 @@ struct PostContent: Node {
     var body: some Node {
         Stack {
             Heading(.one) { title }
-                .font(.sans, size: 32, weight: .bold)
+                .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text)
+                .compact { $0.font(size: 36) }
 
             Stack {
                 Link(to: "/@\(username)") {
                     Text { authorName }
                 }
-                .font(.sans, size: 14, weight: .medium, decoration: TextDecoration.none)
+                .font(.mono, size: 13, weight: .medium, color: .text, decoration: TextDecoration.none)
 
-                Text { "·" }
-                    .font(.sans, size: 14, color: .muted)
+                Text { "\u{00b7}" }
+                    .font(.mono, size: 13, color: .muted)
 
                 Text { publishedAt }
-                    .font(.sans, size: 14, color: .muted)
+                    .font(.mono, size: 13, color: .muted)
 
-                Text { "·" }
-                    .font(.sans, size: 14, color: .muted)
+                Text { "\u{00b7}" }
+                    .font(.mono, size: 13, color: .muted)
 
                 ReadTime(minutes: readMinutes)
             }

@@ -9,7 +9,7 @@ struct SocialLinks: Node {
                 Link(to: link.url) {
                     Text { link.platform.capitalized }
                 }
-                .font(.sans, size: 13, color: .accent, decoration: TextDecoration.none)
+                .font(.mono, size: 13, color: .accent, decoration: TextDecoration.none)
             }
         }
         .flex(.row, gap: 12)
