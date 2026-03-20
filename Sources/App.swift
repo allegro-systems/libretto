@@ -36,6 +36,8 @@ struct LibrettoApp: Application {
     var controllers: [any Controller] {
         [
             AuthController(),
+            PostController(),
+            PublicPostController(),
         ]
     }
 }
