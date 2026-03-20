@@ -193,7 +193,15 @@ struct PublicPostController: Controller {
 
     func listPublished(_ ctx: RequestContext) async throws -> Response {
         let store = try LibrettoStore.persistent()
-        let posts = try await store.listPublishedPosts()
+        var posts = try await store.listPublishedPosts()
+        // Optional ?author=username filter
+        if let authorUsername = ctx.queryParameters["author"], !authorUsername.isEmpty {
+            if let author = try await store.getUserByUsername(authorUsername) {
+                posts = posts.filter { $0.authorId == author.id }
+            } else {
+                posts = []
+            }
+        }
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(posts)
