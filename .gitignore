@@ -1,0 +1,4 @@
+.build/
+.score/
+.swiftpm/
+.DS_Store
