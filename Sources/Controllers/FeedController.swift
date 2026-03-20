@@ -2,11 +2,11 @@ import Foundation
 import Score
 
 struct FeedController: Controller {
-    var base: String { "/" }
+    var base: String { "/feed" }
 
     var routes: [Route] {
         [
-            Route(method: .get, path: "feed.xml", handler: rssFeed),
+            Route(method: .get, handler: rssFeed),
         ]
     }
 
