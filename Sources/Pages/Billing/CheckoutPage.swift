@@ -1,4 +1,5 @@
 import Score
+import ScoreLucide
 
 /// Checkout page at `/billing/checkout`.
 ///
@@ -9,39 +10,61 @@ struct CheckoutPage: Page {
 
     var body: some Node {
         Stack {
-            // Header
-            Section {
-                Link(to: "/billing") {
-                    Text { "\u{2190} Billing" }
-                }
-                .font(.mono, size: 13, color: .muted, decoration: TextDecoration.none)
-                .hover { $0.opacity(0.85) }
-
-                Heading(.one) { "Upgrade Plan" }
-                    .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text)
-                    .compact { $0.font(size: 36) }
-                    .animate(.fadeIn, duration: 0.6)
-            }
-            .flex(.column, gap: 12)
-            .padding(80, at: .vertical)
-            .padding(56, at: .horizontal)
-            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
-
-            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
-
-            // Status message area
-            Stack {}
-                .htmlAttribute("id", "checkout-status")
-
-            // Checkout form
-            Section {
+            // Sidebar + Main content
+            Stack {
+                // Sidebar (240px, surface bg)
                 Stack {
-                    // Plan selection
+                    // Logo
                     Stack {
-                        Text { "SELECT A PLAN" }
-                            .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+                        Icon("feather", size: 18, color: .accent)
+                        Text { "Libretto" }
+                            .font(.serif, size: 18, weight: .bold, color: .text)
+                    }
+                    .flex(.row, gap: 8, align: .center)
+                    .padding(24, at: .horizontal)
+                    .padding(20, at: .vertical)
 
-                        // Pro option
+                    // Nav items
+                    Stack {
+                        sidebarLink(to: "/blog", label: "Blog", icon: "book-open")
+                        sidebarLink(to: "/drafts", label: "Drafts", icon: "file-text")
+                        sidebarLink(to: "/write", label: "Write", icon: "pen-line")
+                        sidebarLink(to: "/settings", label: "Settings", icon: "settings")
+                        sidebarLink(to: "/billing", label: "Billing", icon: "credit-card", active: true)
+                    }
+                    .flex(.column, gap: 2)
+                    .padding(8, at: .horizontal)
+                }
+                .flex(.column, gap: 0)
+                .size(width: 240)
+                .background(.surface)
+                .htmlAttribute("style", "border-right:1px solid var(--color-border);min-height:100vh")
+                .compact { $0.htmlAttribute("style", "width:auto;border-right:none;border-bottom:1px solid var(--color-border)") }
+
+                // Main content
+                Section {
+                    Link(to: "/billing") {
+                        Stack {
+                            Icon("arrow-left", size: 16, color: .muted)
+                            Text { "Billing" }
+                        }
+                        .flex(.row, gap: 6, align: .center)
+                    }
+                    .font(.sans, size: 14, color: .muted, decoration: TextDecoration.none)
+                    .hover { $0.opacity(0.7) }
+
+                    Heading(.one) { "Upgrade to Pro" }
+                        .font(.serif, size: 32, weight: .bold, color: .text)
+
+                    // Status message area
+                    Stack {}
+                        .htmlAttribute("id", "checkout-status")
+
+                    // Plan features
+                    Stack {
+                        Text { "PRO PLAN FEATURES" }
+                            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .muted, transform: .uppercase)
+
                         Stack {
                             Stack {
                                 Input(type: .radio, name: "plan", id: "plan-pro")
@@ -50,41 +73,42 @@ struct CheckoutPage: Page {
                                 Label(for: "plan-pro") {
                                     Stack {
                                         Text { "Pro" }
-                                            .font(.mono, size: 13, weight: .medium, color: .text)
+                                            .font(.sans, size: 14, weight: .semibold, color: .text)
                                         Text { "$9 / month" }
-                                            .font(.mono, size: 13, color: .muted)
+                                            .font(.sans, size: 14, color: .muted)
                                     }
                                     .flex(.row, gap: 12, align: .center)
                                 }
                             }
                             .flex(.row, gap: 10, align: .center)
 
-                            Text { "Unlimited collections \u{00b7} 5 GB storage \u{00b7} custom domain \u{00b7} priority support" }
-                                .font(.mono, size: 11, color: .muted)
+                            Text { "Unlimited collections, 5 GB storage, custom domain, priority support" }
+                                .font(.sans, size: 13, color: .muted)
                         }
-                        .flex(.column, gap: 6)
+                        .flex(.column, gap: 8)
                         .padding(24)
                         .background(.elevated)
                         .border(width: 1, color: .border, style: .solid)
+                        .radius(8)
                     }
-                    .flex(.column, gap: 10)
+                    .flex(.column, gap: 12)
 
                     // Payment details
                     Stack {
                         Text { "PAYMENT DETAILS" }
-                            .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+                            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .muted, transform: .uppercase)
 
-                        // TODO: embed Revolut card field JS component
                         Stack {
                             Paragraph { "Revolut card field will appear here." }
-                                .font(.mono, size: 13, color: .muted)
+                                .font(.sans, size: 13, color: .muted)
                         }
                         .htmlAttribute("id", "revolut-card-field")
                         .padding(24)
                         .background(.elevated)
                         .border(width: 1, color: .border, style: .solid)
+                        .radius(8)
                     }
-                    .flex(.column, gap: 10)
+                    .flex(.column, gap: 12)
 
                     // Confirm button
                     Button(type: .button) {
@@ -92,26 +116,45 @@ struct CheckoutPage: Page {
                     }
                     .htmlAttribute("id", "confirm-btn")
                     .htmlAttribute("onclick", "submitCheckout()")
-                    .font(.mono, size: 13, weight: .medium, color: .bg)
-                    .padding(14, at: .vertical)
-                    .padding(28, at: .horizontal)
-                    .background(.accent)
+                    .font(.sans, size: 14, weight: .medium, color: .bg)
+                    .padding(12, at: .vertical)
+                    .padding(24, at: .horizontal)
+                    .background(.composer)
+                    .radius(4)
                     .hover { $0.opacity(0.85) }
                     .size(width: .percent(100))
                 }
                 .flex(.column, gap: 20)
-                .size(maxWidth: 580)
+                .padding(48, at: .vertical)
+                .padding(64, at: .horizontal)
+                .size(maxWidth: 640)
+                .compact { $0.padding(24, at: .vertical).padding(20, at: .horizontal) }
+                .htmlAttribute("style", "flex:1")
             }
-            .flex(.column, gap: 0)
-            .padding(80, at: .vertical)
-            .padding(56, at: .horizontal)
-            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
+            .flex(.row, gap: 0)
+            .compact { $0.flex(.column, gap: 0) }
 
             RawTextNode(checkoutScript)
         }
         .flex(.column, gap: 0)
         .background(.bg)
         .size(minHeight: .percent(100))
+    }
+
+    private func sidebarLink(to href: String, label: String, icon: String, active: Bool = false) -> some Node {
+        Link(to: href) {
+            Stack {
+                Icon(icon, size: 16, color: active ? .text : .muted)
+                Text { label }
+            }
+            .flex(.row, gap: 10, align: .center)
+        }
+        .font(.sans, size: 14, color: active ? .text : .muted, decoration: TextDecoration.none)
+        .padding(10, at: .vertical)
+        .padding(16, at: .horizontal)
+        .radius(6)
+        .background(active ? .elevated : .surface)
+        .hover { $0.background(.elevated) }
     }
 }
 
@@ -128,7 +171,7 @@ async function submitCheckout() {
 
   btn.disabled = true;
   status.textContent = 'Creating checkout session...';
-  status.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);padding:0 56px';
+  status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);padding:0';
 
   try {
     var res = await fetch('/api/billing/checkout', {
@@ -138,16 +181,16 @@ async function submitCheckout() {
     });
     var json = await res.json();
     if (res.ok) {
-      status.textContent = 'Session created. Redirecting to payment... (stub: ' + json.sessionId + ')';
-      status.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-accent);padding:0 56px';
+      status.textContent = 'Session created. Redirecting to payment...';
+      status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-composer);padding:0';
     } else {
       status.textContent = 'Error: ' + (json.message || res.statusText);
-      status.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:#e53e3e;padding:0 56px';
+      status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:#e53e3e;padding:0';
       btn.disabled = false;
     }
   } catch (e) {
     status.textContent = 'Request failed: ' + e.message;
-    status.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:#e53e3e;padding:0 56px';
+    status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:#e53e3e;padding:0';
     btn.disabled = false;
   }
 }
