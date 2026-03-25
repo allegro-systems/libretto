@@ -23,7 +23,6 @@ swift run score dev --port "$usage_port"
 # Build
 [tasks.build]
 description = "Build the site for production"
-sources = ["Sources/**/*.swift", "Package.swift"]
 usage = '''
 flag "-v --verbose" help="Show verbose build output" default="false"
 '''
@@ -34,7 +33,6 @@ swift run ${usage_verbose:+-v} score build
 # Format & Lint
 [tasks.format]
 description = "Format or lint source code"
-sources = ["Sources/**/*.swift"]
 usage = '''
 flag "--check" help="Lint instead of format" default="false"
 '''
