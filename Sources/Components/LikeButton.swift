@@ -18,11 +18,11 @@ private func likeButtonScript(postId: String, initialCount: Int, initialLiked: B
       <button
         onclick="handleLike('\(postId)')"
         id="like-heart-\(postId)"
-        style="background:none;border:none;cursor:pointer;font-size:22px;padding:0;line-height:1;color:\(initialLiked ? "#e53e3e" : "#aaa");"
+        style="background:none;border:none;cursor:pointer;font-size:22px;padding:0;line-height:1;color:\(initialLiked ? "#e53e3e" : "var(--color-muted)");"
         aria-label="Like this post"
         title="Like"
-      >\(initialLiked ? "♥" : "♡")</button>
-      <span id="like-count-\(postId)" style="font-size:14px;color:#666;">\(initialCount)</span>
+      >\(initialLiked ? "\u{2665}" : "\u{2661}")</button>
+      <span id="like-count-\(postId)" style="font-family:var(--font-sans);font-size:13px;color:var(--color-muted);">\(initialCount)</span>
     </div>
     <script>
     (function() {
@@ -42,7 +42,7 @@ private func likeButtonScript(postId: String, initialCount: Int, initialLiked: B
             if (!data) return;
             _likedState = data.liked;
             btn.textContent = data.liked ? '\\u2665' : '\\u2661';
-            btn.style.color = data.liked ? '#e53e3e' : '#aaa';
+            btn.style.color = data.liked ? '#e53e3e' : 'var(--color-muted)';
             countEl.textContent = data.count;
           })
           .catch(function() {});

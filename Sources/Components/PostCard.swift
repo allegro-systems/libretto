@@ -22,37 +22,34 @@ struct PostCard: Node {
             Link(to: "/@\(username)/\(slug)") {
                 Text { title }
             }
-            .font(.serif, size: 22, weight: .light, color: .text, decoration: TextDecoration.none)
+            .font(.serif, size: 18, weight: .semibold, color: .text, decoration: TextDecoration.none)
 
             Paragraph { excerpt }
-                .font(.mono, size: 13, lineHeight: 1.6, color: .muted)
+                .font(.sans, size: 13, lineHeight: 1.5, color: .muted)
 
             Stack {
+                Stack {}
+                    .htmlAttribute("style", "width:20px;height:20px;border-radius:50%;background:var(--color-accent);flex-shrink:0;")
+
                 Text { authorName }
-                    .font(.mono, size: 11, color: .muted)
+                    .font(.sans, size: 11, color: .muted)
 
                 Text { "\u{00b7}" }
-                    .font(.mono, size: 11, color: .muted)
+                    .font(.sans, size: 11, color: .muted)
 
                 Text { publishedAt }
-                    .font(.mono, size: 11, color: .muted)
+                    .font(.sans, size: 11, color: .muted)
 
                 Text { "\u{00b7}" }
-                    .font(.mono, size: 11, color: .muted)
+                    .font(.sans, size: 11, color: .muted)
 
                 ReadTime(minutes: readMinutes)
-
-                Text { "\u{00b7}" }
-                    .font(.mono, size: 11, color: .muted)
-
-                Text { "\(likeCount) likes" }
-                    .font(.mono, size: 11, color: .muted)
             }
-            .flex(.row, gap: 6)
+            .flex(.row, gap: 6, align: .center)
         }
-        .flex(.column, gap: 8)
+        .flex(.column, gap: 16)
         .padding(24)
-        .background(.elevated)
-        .border(width: 1, color: .border, style: .solid)
+        .background(.surface)
+        .border(width: 1, color: .border, style: .solid, radius: 8)
     }
 }

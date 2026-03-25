@@ -10,28 +10,35 @@ struct PostContent: Node {
 
     var body: some Node {
         Stack {
-            Heading(.one) { title }
-                .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text)
-                .compact { $0.font(size: 36) }
-
+            // Author row
             Stack {
-                Link(to: "/@\(username)") {
-                    Text { authorName }
+                Stack {}
+                    .htmlAttribute("style", "width:48px;height:48px;border-radius:50%;background:var(--color-accent);flex-shrink:0;")
+
+                Stack {
+                    Link(to: "/@\(username)") {
+                        Text { authorName }
+                    }
+                    .font(.sans, size: 14, weight: .medium, color: .text, decoration: TextDecoration.none)
+
+                    Stack {
+                        Text { publishedAt }
+                            .font(.sans, size: 12, color: .muted)
+
+                        Text { "\u{00b7}" }
+                            .font(.sans, size: 12, color: .muted)
+
+                        ReadTime(minutes: readMinutes)
+                    }
+                    .flex(.row, gap: 6, align: .center)
                 }
-                .font(.mono, size: 13, weight: .medium, color: .text, decoration: TextDecoration.none)
-
-                Text { "\u{00b7}" }
-                    .font(.mono, size: 13, color: .muted)
-
-                Text { publishedAt }
-                    .font(.mono, size: 13, color: .muted)
-
-                Text { "\u{00b7}" }
-                    .font(.mono, size: 13, color: .muted)
-
-                ReadTime(minutes: readMinutes)
+                .flex(.column, gap: 2)
             }
-            .flex(.row, gap: 8)
+            .flex(.row, gap: 12, align: .center)
+
+            Heading(.one) { title }
+                .font(.serif, size: 32, weight: .bold, lineHeight: 1.2, color: .text)
+                .compact { $0.font(size: 24) }
 
             MarkdownNode(postBody)
         }

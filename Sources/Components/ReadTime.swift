@@ -5,6 +5,6 @@ struct ReadTime: Node {
 
     var body: some Node {
         Text { "\(minutes) min read" }
-            .font(.mono, size: 11, color: .muted)
+            .font(.sans, size: 11, color: .muted)
     }
 }

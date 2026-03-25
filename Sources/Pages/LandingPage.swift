@@ -1,67 +1,86 @@
 import Score
+import ScoreLucide
 
 struct LandingPage: Page {
     static let path = "/"
 
     var body: some Node {
         Stack {
-            // Hero
-            Section {
-                Heading(.one) { "Libretto" }
-                    .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text, align: .center)
-                    .size(maxWidth: 740)
-                    .compact { $0.font(size: 36) }
-                    .animate(.fadeIn, duration: 0.6)
+            NavBar()
 
-                Paragraph { "A place to write, publish, and connect." }
-                    .font(.mono, size: 15, lineHeight: 1.6, color: .muted, align: .center)
-                    .size(maxWidth: 580)
-                    .compact { $0.font(size: 13) }
-                    .animate(.fadeIn, duration: 0.6, delay: 0.15)
+            // Main content area
+            Stack {
+                // Left column — feed
+                Section {
+                    // Section heading
+                    Stack {
+                        Icon("trending-up", size: 18, color: .accent)
+                        Heading(.two) { "Recent Posts" }
+                            .font(.serif, size: 24, weight: .semibold, color: .text)
+                    }
+                    .flex(.row, gap: 10, align: .center)
 
-                Stack {
-                    Link(to: "/login") { "Start Writing" }
-                        .font(.mono, size: 13, weight: .medium, color: .bg, align: .center, decoration: TextDecoration.none)
-                        .padding(14, at: .vertical)
-                        .padding(28, at: .horizontal)
-                        .background(.accent)
-                        .hover { $0.opacity(0.85) }
+                    // Post feed — hydrated client-side
+                    Stack {}
+                        .htmlAttribute("id", "posts-root")
 
-                    Link(to: "/blog") { "Read Blog" }
-                        .font(.mono, size: 13, weight: .medium, color: .text, align: .center, decoration: TextDecoration.none)
-                        .padding(14, at: .vertical)
-                        .padding(28, at: .horizontal)
-                        .border(width: 1, color: .border, style: .solid)
-                        .hover { $0.background(.elevated) }
+                    RawTextNode(postsScript)
                 }
-                .flex(.row, gap: 16, align: .center)
-                .compact { $0.flex(.column, gap: 12).size(width: .percent(100)) }
-                .animate(.fadeIn, duration: 0.6, delay: 0.3)
+                .flex(.column, gap: 28)
+                .flexItem(grow: 1)
+
+                // Right sidebar — discover
+                Aside {
+                    // About block
+                    Stack {
+                        Paragraph { "Libretto is a writing platform where ideas find their audience. Read, write, and connect." }
+                            .font(.sans, size: 13, lineHeight: 1.6, color: .muted)
+
+                        Link(to: "/login") {
+                            Text { "Start Writing" }
+                        }
+                        .font(.sans, size: 13, weight: .medium, color: .bg, align: .center, decoration: TextDecoration.none)
+                        .size(width: .percent(100))
+                        .padding(10, at: .vertical)
+                        .background(.accent)
+                        .radius(6)
+                        .hover { $0.opacity(0.85) }
+                    }
+                    .flex(.column, gap: 16)
+                    .padding(20)
+                    .background(.surface)
+                    .border(width: 1, color: .border, style: .solid)
+
+                    // Topics
+                    Stack {
+                        Text { "TOPICS" }
+                            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .dimmer, transform: .uppercase)
+
+                        Stack {
+                            topicPill("Swift")
+                            topicPill("Web Development")
+                            topicPill("Design")
+                            topicPill("Productivity")
+                            topicPill("Open Source")
+                            topicPill("Writing")
+                        }
+                        .flex(.row, gap: 8)
+                        .htmlAttribute("style", "flex-wrap:wrap;")
+                    }
+                    .flex(.column, gap: 12)
+                    .padding(20)
+                    .background(.surface)
+                    .border(width: 1, color: .border, style: .solid)
+                }
+                .flex(.column, gap: 16)
+                .size(width: 280)
+                .flexItem(shrink: 0)
+                .compact { $0.hidden() }
             }
-            .flex(.column, gap: 28, align: .center)
-            .padding(120, at: .vertical)
-            .padding(56, at: .horizontal)
-            .backgroundGradient(.radial(color: .libretto, opacity: 0.04, width: 120, height: 80, at: .top))
-            .compact { $0.padding(80, at: .vertical).padding(20, at: .horizontal) }
-
-            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
-
-            // Recent Posts
-            Section {
-                Text { "RECENT POSTS" }
-                    .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
-                    .animateOnScroll(.fadeIn)
-
-                Stack {}
-                    .htmlAttribute("id", "landing-posts-root")
-                    .animateOnScroll(.slideUp, duration: 0.5)
-
-                RawTextNode(landingPostsScript)
-            }
-            .flex(.column, gap: 24)
-            .padding(80, at: .vertical)
-            .padding(56, at: .horizontal)
-            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
+            .flex(.row, gap: 40)
+            .padding(32, at: .vertical)
+            .padding(48, at: .horizontal)
+            .compact { $0.padding(24) }
         }
         .flex(.column, gap: 0)
         .background(.bg)
@@ -69,13 +88,26 @@ struct LandingPage: Page {
     }
 }
 
-private let landingPostsScript = """
+// MARK: - Sub-components
+
+private func topicPill(_ label: String) -> some Node {
+    Text { label }
+        .font(.sans, size: 12, color: .muted)
+        .padding(6, at: .vertical)
+        .padding(12, at: .horizontal)
+        .border(width: 1, color: .border, style: .solid, radius: 16)
+        .hover { $0.background(.elevated).font(color: .text) }
+}
+
+// MARK: - Client Script
+
+private let postsScript = """
 <script>
 (function() {
-  var root = document.getElementById('landing-posts-root');
+  var root = document.getElementById('posts-root');
   if (!root) return;
 
-  root.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
+  root.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);';
   root.textContent = 'Loading posts...';
 
   fetch('/api/public/posts')
@@ -87,71 +119,101 @@ private let landingPostsScript = """
       root.textContent = '';
 
       if (!posts || posts.length === 0) {
-        root.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
+        root.style.cssText = 'font-family:var(--font-sans);font-size:15px;color:var(--color-muted);text-align:center;padding:80px 0;';
         root.textContent = 'No posts yet \\u2014 be the first to write something.';
         return;
       }
 
-      var top6 = posts.slice(0, 6);
-      var grid = document.createElement('div');
-      grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;';
+      var feed = document.createElement('div');
+      feed.style.cssText = 'display:flex;flex-direction:column;gap:0;';
 
-      top6.forEach(function(post) {
-        var card = document.createElement('div');
-        card.style.cssText = 'background:var(--color-elevated);border:1px solid var(--color-border);border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:8px;';
+      posts.forEach(function(post, i) {
+        var card = document.createElement('a');
+        card.href = '/@' + encodeURIComponent(post.authorId) + '/' + encodeURIComponent(post.slug);
+        card.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:24px 0;text-decoration:none;transition:opacity 0.15s;';
+        if (i > 0) card.style.borderTop = '1px solid var(--color-border)';
+        card.onmouseenter = function() { card.style.opacity = '0.8'; };
+        card.onmouseleave = function() { card.style.opacity = '1'; };
+
+        // Author row
+        var authorRow = document.createElement('div');
+        authorRow.style.cssText = 'display:flex;gap:10px;align-items:center;';
+
+        var avatar = document.createElement('div');
+        avatar.style.cssText = 'width:28px;height:28px;border-radius:50%;background:var(--color-accent);flex-shrink:0;';
+        authorRow.appendChild(avatar);
+
+        var authorInfo = document.createElement('div');
+        authorInfo.style.cssText = 'display:flex;flex-direction:column;gap:1px;';
+
+        var authorName = document.createElement('span');
+        authorName.style.cssText = 'font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--color-text);';
+        authorName.textContent = post.authorId;
+        authorInfo.appendChild(authorName);
 
         var pub = post.publishedAt
-          ? new Date(post.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+          ? new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
           : '';
+        if (pub) {
+          var dateSpan = document.createElement('span');
+          dateSpan.style.cssText = 'font-family:var(--font-mono);font-size:11px;color:var(--color-dimmer);';
+          dateSpan.textContent = pub;
+          authorInfo.appendChild(dateSpan);
+        }
 
-        var raw = post.body || '';
-        var excerpt = raw.length > 160 ? raw.slice(0, 160) + '\\u2026' : raw;
+        authorRow.appendChild(authorInfo);
+        card.appendChild(authorRow);
 
-        var titleLink = document.createElement('a');
-        titleLink.href = '/@' + encodeURIComponent(post.authorId) + '/' + encodeURIComponent(post.slug);
-        titleLink.style.cssText = 'font-family:var(--font-serif);font-size:20px;font-weight:300;color:var(--color-text);text-decoration:none;';
-        titleLink.textContent = post.title;
-        card.appendChild(titleLink);
+        // Title
+        var title = document.createElement('div');
+        title.style.cssText = 'font-family:var(--font-serif);font-size:20px;font-weight:600;color:var(--color-text);line-height:1.3;';
+        title.textContent = post.title;
+        card.appendChild(title);
 
+        // Excerpt
+        var raw = post.excerpt || post.body || '';
+        var excerpt = raw.length > 200 ? raw.slice(0, 200) + '\\u2026' : raw;
         var excerptEl = document.createElement('p');
-        excerptEl.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);margin:0;flex:1;line-height:1.6;';
+        excerptEl.style.cssText = 'font-family:var(--font-sans);font-size:14px;color:var(--color-muted);margin:0;line-height:1.6;';
         excerptEl.textContent = excerpt;
         card.appendChild(excerptEl);
 
+        // Footer meta
         var meta = document.createElement('div');
-        meta.style.cssText = 'display:flex;gap:6px;align-items:center;font-family:var(--font-mono);font-size:11px;color:var(--color-muted);flex-wrap:wrap;margin-top:4px;';
-
-        var authorSpan = document.createElement('span');
-        authorSpan.textContent = post.authorId;
-        meta.appendChild(authorSpan);
-
-        if (pub) {
-          var dot = document.createElement('span');
-          dot.textContent = '\\u00b7';
-          meta.appendChild(dot);
-          var dateSpan = document.createElement('span');
-          dateSpan.textContent = pub;
-          meta.appendChild(dateSpan);
-        }
-
-        var dot2 = document.createElement('span');
-        dot2.textContent = '\\u00b7';
-        meta.appendChild(dot2);
+        meta.style.cssText = 'display:flex;gap:16px;align-items:center;font-family:var(--font-mono);font-size:11px;color:var(--color-dimmer);margin-top:4px;';
 
         var readSpan = document.createElement('span');
         readSpan.textContent = (post.estimatedReadMinutes || 1) + ' min read';
         meta.appendChild(readSpan);
 
+        if (typeof post.likeCount === 'number') {
+          var likeSpan = document.createElement('span');
+          likeSpan.textContent = '\\u2665 ' + post.likeCount;
+          meta.appendChild(likeSpan);
+        }
+
         card.appendChild(meta);
-        grid.appendChild(card);
+        feed.appendChild(card);
       });
 
-      root.appendChild(grid);
+      root.appendChild(feed);
     })
     .catch(function() {
-      root.style.cssText = 'font-family:var(--font-mono);font-size:13px;color:var(--color-muted);';
+      root.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);';
       root.textContent = 'Could not load posts.';
     });
+
+  // Search wiring
+  var searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var q = searchInput.value.toLowerCase().trim();
+      var cards = root.querySelectorAll('a');
+      cards.forEach(function(c) {
+        c.style.display = (!q || c.textContent.toLowerCase().indexOf(q) >= 0) ? 'flex' : 'none';
+      });
+    });
+  }
 })();
 </script>
 """
