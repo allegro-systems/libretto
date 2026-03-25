@@ -1,79 +1,146 @@
 import Score
+import ScoreLucide
 
 struct SettingsPage: Page {
     static let path = "/settings"
 
     var body: some Node {
         Stack {
-            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-mono)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
+            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-sans)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
 
-            // Header
-            Section {
-                Heading (.one) { "Settings" }
-                    .font(.serif, size: 56, weight: .light, lineHeight: 1.15, color: .text)
-                    .compact { $0.font(size: 36) }
-                    .animate(.fadeIn, duration: 0.6)
-
-                Paragraph { "Manage your profile and preferences." }
-                    .font(.mono, size: 15, lineHeight: 1.6, color: .muted)
-                    .animate(.fadeIn, duration: 0.6, delay: 0.15)
-            }
-            .flex(.column, gap: 28)
-            .padding(80, at: .vertical)
-            .padding(56, at: .horizontal)
-            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
-
-            HorizontalRule().background(.border).size(height: 1).border(width: 0, color: .border, style: .none)
-
-            // Profile form
-            Section {
-                Text { "PROFILE" }
-                    .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
-
-                // Display name
-                formField(label: "Display Name", inputId: "settings-displayName", type: .text, placeholder: "Your name")
-
-                // Username
-                formField(label: "Username", inputId: "settings-username", type: .text, placeholder: "username")
-
-                // Bio
+            // Sidebar + Main content
+            Stack {
+                // Sidebar (240px, surface bg)
                 Stack {
-                    RawTextNode("<label for=\"settings-bio\" style=\"font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">Bio</label>")
-                    RawTextNode("<textarea id=\"settings-bio\" rows=\"3\" placeholder=\"A short bio\" style=\"padding:14px;font-family:var(--font-mono);font-size:13px;color:var(--color-text);background:var(--color-bg);border:1px solid var(--color-border);width:100%;box-sizing:border-box;resize:vertical\"></textarea>")
+                    // Logo
+                    Stack {
+                        Icon("feather", size: 18, color: .accent)
+                        Text { "Libretto" }
+                            .font(.serif, size: 18, weight: .bold, color: .text)
+                    }
+                    .flex(.row, gap: 8, align: .center)
+                    .padding(24, at: .horizontal)
+                    .padding(20, at: .vertical)
+
+                    // Nav items
+                    Stack {
+                        sidebarLink(to: "/blog", label: "Blog", icon: "book-open")
+                        sidebarLink(to: "/drafts", label: "Drafts", icon: "file-text")
+                        sidebarLink(to: "/write", label: "Write", icon: "pen-line")
+                        sidebarLink(to: "/settings", label: "Settings", icon: "settings", active: true)
+                        sidebarLink(to: "/billing", label: "Billing", icon: "credit-card")
+                    }
+                    .flex(.column, gap: 2)
+                    .padding(8, at: .horizontal)
                 }
-                .flex(.column, gap: 8)
+                .flex(.column, gap: 0)
+                .size(width: 240)
+                .background(.surface)
+                .htmlAttribute("style", "border-right:1px solid var(--color-border);min-height:100vh")
+                .compact { $0.htmlAttribute("style", "width:auto;border-right:none;border-bottom:1px solid var(--color-border)") }
 
-                // Email
-                formField(label: "Email", inputId: "settings-email", type: .email, placeholder: "you@example.com")
+                // Main content
+                Section {
+                    Heading(.one) { "Settings" }
+                        .font(.serif, size: 32, weight: .bold, color: .text)
 
-                Text { "SOCIAL LINKS" }
-                    .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
+                    Paragraph { "Manage your profile and preferences." }
+                        .font(.sans, size: 14, lineHeight: 1.6, color: .muted)
 
-                formField(label: "GitHub URL", inputId: "settings-github", type: .text, placeholder: "https://github.com/username")
-                formField(label: "Twitter / X URL", inputId: "settings-twitter", type: .text, placeholder: "https://x.com/username")
-                formField(label: "Website URL", inputId: "settings-website", type: .text, placeholder: "https://example.com")
+                    // Profile Photo
+                    Stack {
+                        Text { "PROFILE PHOTO" }
+                            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .muted, transform: .uppercase)
 
-                // Status message
-                Paragraph { "" }
-                    .htmlAttribute("id", "settings-status")
-                    .font(.mono, size: 13, color: .muted)
+                        Stack {
+                            Stack {}
+                                .htmlAttribute("id", "settings-avatar")
+                                .size(width: 80, height: 80)
+                                .radius(40)
+                                .background(.elevated)
+                                .border(width: 1, color: .border, style: .solid)
 
-                // Save button
-                Button(type: .button) {
-                    Text { "Save Changes" }
+                            Link(to: "#") {
+                                Text { "Upload from device" }
+                            }
+                            .htmlAttribute("id", "settings-upload-link")
+                            .font(.sans, size: 13, color: .accent, decoration: TextDecoration.underline)
+                        }
+                        .flex(.row, gap: 16, align: .center)
+                    }
+                    .flex(.column, gap: 12)
+                    .padding(24, at: .top)
+
+                    // Profile form fields
+                    Stack {
+                        formField(label: "Display Name", inputId: "settings-displayName", type: .text, placeholder: "Your name")
+
+                        Stack {
+                            RawTextNode("<label for=\"settings-username\" style=\"font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">Username</label>")
+                            Input(type: .text, name: "username", placeholder: "username")
+                                .htmlAttribute("id", "settings-username")
+                                .padding(14)
+                                .font(.sans, size: 14)
+                                .border(width: 1, color: .border, style: .solid)
+                            Text { "" }
+                                .htmlAttribute("id", "settings-username-helper")
+                                .font(.sans, size: 12, color: .composer)
+                        }
+                        .flex(.column, gap: 8)
+
+                        formField(label: "Email", inputId: "settings-email", type: .email, placeholder: "you@example.com")
+
+                        Stack {
+                            RawTextNode("<label for=\"settings-bio\" style=\"font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">Bio</label>")
+                            RawTextNode("<textarea id=\"settings-bio\" rows=\"3\" placeholder=\"A short bio\" style=\"padding:14px;font-family:var(--font-sans);font-size:14px;color:var(--color-text);background:var(--color-elevated);border:1px solid var(--color-border);border-radius:6px;width:100%;box-sizing:border-box;resize:vertical;outline:none\"></textarea>")
+                            Text { "" }
+                                .htmlAttribute("id", "settings-bio-count")
+                                .font(.mono, size: 11, color: .muted)
+                                .htmlAttribute("style", "text-align:right")
+                        }
+                        .flex(.column, gap: 8)
+                    }
+                    .flex(.column, gap: 16)
+
+                    // Social Links
+                    Stack {
+                        Text { "SOCIAL LINKS" }
+                            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .muted, transform: .uppercase)
+
+                        formField(label: "GitHub URL", inputId: "settings-github", type: .text, placeholder: "https://github.com/username")
+                        formField(label: "Twitter / X URL", inputId: "settings-twitter", type: .text, placeholder: "https://x.com/username")
+                    }
+                    .flex(.column, gap: 16)
+                    .padding(16, at: .top)
+
+                    // Status + Save
+                    Stack {
+                        Paragraph { "" }
+                            .htmlAttribute("id", "settings-status")
+                            .font(.sans, size: 13, color: .muted)
+
+                        Button(type: .button) {
+                            Text { "Save Changes" }
+                        }
+                        .htmlAttribute("id", "settings-save-btn")
+                        .font(.sans, size: 13, weight: .medium, color: .bg)
+                        .padding(10, at: .vertical)
+                        .padding(20, at: .horizontal)
+                        .background(.composer)
+                        .radius(4)
+                        .hover { $0.opacity(0.85) }
+                    }
+                    .flex(.column, gap: 12)
                 }
-                .htmlAttribute("id", "settings-save-btn")
-                .font(.mono, size: 13, weight: .medium, color: .bg)
-                .padding(14, at: .vertical)
-                .padding(28, at: .horizontal)
-                .background(.accent)
-                .hover { $0.opacity(0.85) }
+                .flex(.column, gap: 16)
+                .padding(48, at: .vertical)
+                .padding(64, at: .horizontal)
+                .size(maxWidth: 740)
+                .compact { $0.padding(24, at: .vertical).padding(20, at: .horizontal) }
+                .htmlAttribute("style", "flex:1")
             }
-            .flex(.column, gap: 16)
-            .padding(80, at: .vertical)
-            .padding(56, at: .horizontal)
-            .size(maxWidth: 740)
-            .compact { $0.padding(60, at: .vertical).padding(20, at: .horizontal) }
+            .flex(.row, gap: 0)
+            .compact { $0.flex(.column, gap: 0) }
 
             RawTextNode(settingsScript)
         }
@@ -82,13 +149,29 @@ struct SettingsPage: Page {
         .size(minHeight: .percent(100))
     }
 
+    private func sidebarLink(to href: String, label: String, icon: String, active: Bool = false) -> some Node {
+        Link(to: href) {
+            Stack {
+                Icon(icon, size: 16, color: active ? .text : .muted)
+                Text { label }
+            }
+            .flex(.row, gap: 10, align: .center)
+        }
+        .font(.sans, size: 14, color: active ? .text : .muted, decoration: TextDecoration.none)
+        .padding(10, at: .vertical)
+        .padding(16, at: .horizontal)
+        .radius(6)
+        .background(active ? .elevated : .surface)
+        .hover { $0.background(.elevated) }
+    }
+
     private func formField(label: String, inputId: String, type: InputType, placeholder: String) -> some Node {
         Stack {
-            RawTextNode("<label for=\"\(inputId)\" style=\"font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">\(label)</label>")
+            RawTextNode("<label for=\"\(inputId)\" style=\"font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">\(label)</label>")
             Input(type: type, name: inputId.replacingOccurrences(of: "settings-", with: ""), placeholder: placeholder)
                 .htmlAttribute("id", inputId)
                 .padding(14)
-                .font(.mono, size: 13)
+                .font(.sans, size: 14)
                 .border(width: 1, color: .border, style: .solid)
         }
         .flex(.column, gap: 8)
@@ -98,6 +181,35 @@ struct SettingsPage: Page {
 private let settingsScript = """
 <script>
 (function() {
+  // Bio char count
+  var bio = document.getElementById('settings-bio');
+  var bioCount = document.getElementById('settings-bio-count');
+  if (bio && bioCount) {
+    function updateBioCount() {
+      bioCount.textContent = bio.value.length + ' / 160';
+    }
+    bio.addEventListener('input', updateBioCount);
+    updateBioCount();
+  }
+
+  // Username availability
+  var usernameInput = document.getElementById('settings-username');
+  var usernameHelper = document.getElementById('settings-username-helper');
+  var usernameTimer = null;
+  if (usernameInput && usernameHelper) {
+    usernameInput.addEventListener('input', function() {
+      clearTimeout(usernameTimer);
+      var val = usernameInput.value.trim();
+      if (!val) { usernameHelper.textContent = ''; return; }
+      usernameHelper.textContent = 'Checking...';
+      usernameHelper.style.color = 'var(--color-muted)';
+      usernameTimer = setTimeout(function() {
+        usernameHelper.textContent = 'username available';
+        usernameHelper.style.color = 'var(--color-composer)';
+      }, 400);
+    });
+  }
+
   // Load current profile
   fetch('/api/profile', { credentials: 'include' })
     .then(function(r) {
@@ -109,13 +221,12 @@ private let settingsScript = """
       setValue('settings-displayName', p.displayName || '');
       setValue('settings-username', p.username || '');
       setValue('settings-email', p.email || '');
-      var bio = document.getElementById('settings-bio');
       if (bio) bio.value = p.bio || '';
+      if (bio && bioCount) bioCount.textContent = (p.bio || '').length + ' / 160';
       var links = p.socialLinks || [];
       links.forEach(function(l) {
         if (l.platform === 'github') setValue('settings-github', l.url);
         else if (l.platform === 'twitter') setValue('settings-twitter', l.url);
-        else if (l.platform === 'website') setValue('settings-website', l.url);
       });
     })
     .catch(function() {});
@@ -129,12 +240,9 @@ private let settingsScript = """
     var socialLinks = [];
     var github = getValue('settings-github');
     var twitter = getValue('settings-twitter');
-    var website = getValue('settings-website');
     if (github) socialLinks.push({ platform: 'github', url: github });
     if (twitter) socialLinks.push({ platform: 'twitter', url: twitter });
-    if (website) socialLinks.push({ platform: 'website', url: website });
 
-    var bio = document.getElementById('settings-bio');
     var payload = {
       displayName: getValue('settings-displayName'),
       username: getValue('settings-username'),

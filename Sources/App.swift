@@ -12,12 +12,14 @@ struct LibrettoApp: Application {
     var plugins: [any ScorePlugin] {
         [
             LucidePlugin(),
-            OAuthPlugin(providers: [
-                .github(
-                    clientId: ProcessInfo.processInfo.environment["GITHUB_CLIENT_ID"] ?? "",
-                    clientSecret: ProcessInfo.processInfo.environment["GITHUB_CLIENT_SECRET"] ?? ""
-                ),
-            ]),
+            OAuthPlugin(
+                providers: [
+                    .github(
+                        clientId: ProcessInfo.processInfo.environment["GITHUB_CLIENT_ID"] ?? "",
+                        clientSecret: ProcessInfo.processInfo.environment["GITHUB_CLIENT_SECRET"] ?? ""
+                    ),
+                ]
+            ),
             PaymentsPlugin(providers: [
                 .revolut(
                     apiKey: ProcessInfo.processInfo.environment["REVOLUT_API_KEY"] ?? "",

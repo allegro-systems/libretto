@@ -19,15 +19,16 @@ struct LibrettoErrorPage: ErrorPage {
                     .animate(.fadeIn, duration: 0.6, delay: 0.15)
 
                 Paragraph { context.message }
-                    .font(.mono, size: 13, lineHeight: 1.6, color: .muted, align: .center)
+                    .font(.sans, size: 14, lineHeight: 1.6, color: .muted, align: .center)
                     .size(maxWidth: 580)
                     .animate(.fadeIn, duration: 0.6, delay: 0.3)
 
                 Link(to: "/") { "Back to Home" }
-                    .font(.mono, size: 13, weight: .medium, color: .text, align: .center, decoration: TextDecoration.none)
-                    .padding(14, at: .vertical)
-                    .padding(28, at: .horizontal)
+                    .font(.sans, size: 13, weight: .medium, color: .text, align: .center, decoration: TextDecoration.none)
+                    .padding(10, at: .vertical)
+                    .padding(20, at: .horizontal)
                     .border(width: 1, color: .border, style: .solid)
+                    .radius(4)
                     .hover { $0.background(.elevated) }
                     .animate(.fadeIn, duration: 0.6, delay: 0.45)
             }
