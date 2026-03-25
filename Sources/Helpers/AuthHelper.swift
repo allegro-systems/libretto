@@ -13,11 +13,18 @@ final class AuthHelper: Sendable {
     private init() {
         let baseURL = ProcessInfo.processInfo.environment["BASE_URL"]
             ?? "http://localhost:8080"
+        let resendKey = ProcessInfo.processInfo.environment["RESEND_API_KEY"] ?? ""
 
         self.sessions = MemorySessionStore()
         self.csrf = CSRFProtection()
         self.magicLinks = MagicLinkManager(
-            configuration: MagicLinkConfiguration(baseURL: baseURL)
+            configuration: MagicLinkConfiguration(baseURL: baseURL),
+            sender: ResendMagicLinkSender(
+                apiKey: resendKey,
+                from: "Libretto <onboarding@resend.dev>",
+                subject: "Sign in to Libretto",
+                productName: "Libretto"
+            )
         )
         self.passkeys = PasskeyManager(
             configuration: PasskeyConfiguration(

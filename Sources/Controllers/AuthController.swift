@@ -10,6 +10,8 @@ struct AuthController: Controller {
             Route(method: .post, path: "magic-link", handler: sendMagicLink),
             Route(method: .get, path: "verify", handler: verifyMagicLink),
             Route(method: .post, path: "logout", handler: logout),
+            Route(method: .post, path: "passkey/options", handler: passkeyOptions),
+            Route(method: .post, path: "passkey/verify", handler: passkeyVerify),
         ]
     }
 
@@ -78,6 +80,67 @@ struct AuthController: Controller {
                 "location": "/",
                 "set-cookie": "session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0",
             ]
+        )
+    }
+
+    // MARK: - Passkey
+
+    func passkeyOptions(_ ctx: RequestContext) async throws -> Response {
+        let options = try await AuthHelper.shared.passkeys.authenticationOptions()
+        let data = try JSONSerialization.data(withJSONObject: options)
+        return Response.json(data)
+    }
+
+    func passkeyVerify(_ ctx: RequestContext) async throws -> Response {
+        guard let body = ctx.body,
+              let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
+              let credentialId = json["id"] as? String,
+              let responseObj = json["response"] as? [String: Any],
+              let authDataB64 = responseObj["authenticatorData"] as? String
+        else {
+            return Response.json(
+                Data(#"{"error":"Invalid passkey response"}"#.utf8),
+                status: .badRequest
+            )
+        }
+
+        // Parse sign count from authenticatorData (bytes 33-36, big-endian)
+        guard let authData = Data(base64Encoded: authDataB64), authData.count >= 37 else {
+            return Response.json(
+                Data(#"{"error":"Invalid authenticator data"}"#.utf8),
+                status: .badRequest
+            )
+        }
+        let signCount = authData[33...36].withUnsafeBytes { $0.load(as: UInt32.self).bigEndian }
+
+        guard let credential = try await AuthHelper.shared.passkeys.verifyAuthentication(
+            credentialId: credentialId,
+            signCount: signCount
+        ) else {
+            return Response.json(
+                Data(#"{"error":"Passkey verification failed"}"#.utf8),
+                status: .unauthorized
+            )
+        }
+
+        let store = try LibrettoStore.persistent()
+        guard let user = try await store.getUser(id: credential.userId) else {
+            return Response.json(
+                Data(#"{"error":"User not found"}"#.utf8),
+                status: .unauthorized
+            )
+        }
+
+        let session = Session(userId: user.id)
+        try await AuthHelper.shared.sessions.save(session)
+
+        return Response(
+            status: .ok,
+            headers: [
+                "content-type": "application/json",
+                "set-cookie": "session=\(session.id); Path=/; HttpOnly; SameSite=Lax",
+            ],
+            body: Data(#"{"success":true}"#.utf8)
         )
     }
 
