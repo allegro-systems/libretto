@@ -3,13 +3,13 @@ import Score
 struct Editor: Node {
     var body: some Node {
         Stack {
-            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-mono)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
+            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-sans)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
 
             // Title input
             Input(type: .text, name: "title", placeholder: "Post title\u{2026}")
                 .htmlAttribute("id", "editor-title")
                 .padding(14)
-                .font(.serif, size: 22, weight: .light)
+                .font(.serif, size: 22, weight: .semibold)
                 .htmlAttribute("style", "width:100%;box-sizing:border-box;border:1px solid var(--color-border);background:var(--color-elevated);color:var(--color-text);")
 
             // Formatting toolbar
@@ -27,7 +27,7 @@ struct Editor: Node {
 
             // Editor + preview split
             Stack {
-                // Textarea
+                // Textarea (mono for code editing)
                 RawTextNode("""
 <textarea id="editor-body" placeholder="Write in Markdown\u{2026}" style="flex:1;min-width:0;height:480px;box-sizing:border-box;padding:14px;background:var(--color-elevated);color:var(--color-text);border:1px solid var(--color-border);font-family:var(--font-mono);font-size:13px;line-height:1.6;resize:vertical;"></textarea>
 """)
@@ -37,7 +37,7 @@ struct Editor: Node {
                     Text { "PREVIEW" }
                         .font(.mono, size: 12, weight: .medium, tracking: 3, color: .muted, transform: .uppercase)
                     RawTextNode("""
-<div id="editor-preview" style="min-height:480px;padding:14px;background:var(--color-elevated);border:1px solid var(--color-border);color:var(--color-text);font-family:var(--font-serif);font-size:15px;line-height:1.7;overflow-y:auto;word-break:break-word;"></div>
+<div id="editor-preview" style="min-height:480px;padding:14px;background:var(--color-elevated);border:1px solid var(--color-border);color:var(--color-text);font-family:var(--font-sans);font-size:15px;line-height:1.7;overflow-y:auto;word-break:break-word;"></div>
 """)
                 }
                 .flex(.column, gap: 8)
@@ -50,7 +50,7 @@ struct Editor: Node {
             Stack {
                 Button(type: .button) { Text { "Save Draft" } }
                     .htmlAttribute("id", "btn-save-draft")
-                    .font(.mono, size: 13, weight: .medium, color: .text)
+                    .font(.sans, size: 13, weight: .medium, color: .text)
                     .padding(14, at: .vertical)
                     .padding(28, at: .horizontal)
                     .border(width: 1, color: .border, style: .solid)
@@ -58,7 +58,7 @@ struct Editor: Node {
 
                 Button(type: .button) { Text { "Publish" } }
                     .htmlAttribute("id", "btn-publish")
-                    .font(.mono, size: 13, weight: .medium, color: .bg)
+                    .font(.sans, size: 13, weight: .medium, color: .bg)
                     .padding(14, at: .vertical)
                     .padding(28, at: .horizontal)
                     .background(.accent)
@@ -66,7 +66,7 @@ struct Editor: Node {
 
                 Paragraph { "" }
                     .htmlAttribute("id", "editor-status")
-                    .font(.mono, size: 13, color: .muted)
+                    .font(.sans, size: 13, color: .muted)
             }
             .flex(.row, gap: 12)
             .htmlAttribute("style", "align-items:center;")
@@ -99,7 +99,6 @@ private let editorScript = #"""
   var title    = document.getElementById('editor-title');
   var status   = document.getElementById('editor-status');
 
-  // ---------- Lightweight Markdown renderer ----------
   function escHtml(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
@@ -113,7 +112,6 @@ private let editorScript = #"""
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i];
 
-      // Fenced code block
       if (line.startsWith('```')) {
         if (inPre) {
           out.push('<pre style="background:var(--color-elevated);padding:10px;overflow:auto;"><code>' + escHtml(preBuf.join('\n')) + '</code></pre>');
@@ -125,36 +123,30 @@ private let editorScript = #"""
 
       var esc = escHtml(line);
 
-      // Headings
       var hm = esc.match(/^(#{1,6}) (.+)$/);
       if (hm) {
         var lvl = hm[1].length;
-        out.push('<h' + lvl + '>' + hm[2] + '</h' + lvl + '>');
+        out.push('<h' + lvl + ' style="font-family:var(--font-serif);">' + hm[2] + '</h' + lvl + '>');
         continue;
       }
 
-      // Blockquote
       if (esc.startsWith('&gt; ')) {
         out.push('<blockquote style="border-left:3px solid var(--color-border);padding-left:12px;color:var(--color-muted);margin:8px 0;">' + inlineFormat(esc.slice(5)) + '</blockquote>');
         continue;
       }
 
-      // Bullet list
       if (/^[*\-] /.test(esc)) {
         out.push('<li style="list-style:disc;margin-left:20px;">' + inlineFormat(esc.slice(2)) + '</li>');
         continue;
       }
 
-      // Numbered list
       if (/^\d+\. /.test(esc)) {
         out.push('<li style="list-style:decimal;margin-left:20px;">' + inlineFormat(esc.replace(/^\d+\. /,'')) + '</li>');
         continue;
       }
 
-      // Blank line
       if (esc.trim() === '') { out.push('<br>'); continue; }
 
-      // Paragraph line
       out.push('<p style="margin:0 0 4px;">' + inlineFormat(esc) + '</p>');
     }
 
@@ -170,11 +162,10 @@ private let editorScript = #"""
       .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`([^`]+)`/g, '<code style="background:var(--color-elevated);padding:2px 4px;">$1</code>')
+      .replace(/`([^`]+)`/g, '<code style="font-family:var(--font-mono);background:var(--color-elevated);padding:2px 4px;">$1</code>')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--color-accent);">$1</a>');
   }
 
-  // ---------- Live preview ----------
   function updatePreview() {
     if (preview && textarea) {
       preview.innerHTML = renderMarkdown(textarea.value);
@@ -182,7 +173,6 @@ private let editorScript = #"""
   }
   if (textarea) textarea.addEventListener('input', updatePreview);
 
-  // ---------- Toolbar helpers ----------
   function wrapSelection(prefix, suffix) {
     if (!textarea) return;
     var start = textarea.selectionStart;
@@ -223,7 +213,6 @@ private let editorScript = #"""
   bindBtn('btn-list',    function() { prependLine('- '); });
   bindBtn('btn-quote',   function() { prependLine('> '); });
 
-  // ---------- Load existing post ----------
   function getPostIdFromUrl() {
     var parts = window.location.pathname.split('/').filter(Boolean);
     if (parts.length >= 2 && parts[0] === 'write') return parts[1];
@@ -245,7 +234,6 @@ private let editorScript = #"""
       });
   }
 
-  // ---------- Save / Publish ----------
   async function savePost(publish) {
     var t = title    ? title.value.trim() : '';
     var b = textarea ? textarea.value     : '';
