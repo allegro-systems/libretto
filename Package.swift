@@ -5,11 +5,12 @@ let package = Package(
     name: "Libretto",
     platforms: [.macOS(.v14)],
     dependencies: [
-        .package(url: "https://github.com/allegro-systems/score.git", branch: "main"),
-        .package(url: "https://github.com/allegro-systems/score-oauth.git", branch: "main"),
-        .package(url: "https://github.com/allegro-systems/score-payments.git", branch: "main"),
-        .package(url: "https://github.com/allegro-systems/score-lucide.git", branch: "main"),
-        .package(url: "https://github.com/allegro-systems/allegro-theme.git", branch: "main"),
+        .package(name: "Score", path: "../../framework/score"),
+        .package(name: "Stage", path: "../../infra/stage"),
+        .package(name: "score-oauth", path: "../../framework/plugins/score-oauth"),
+        .package(name: "score-payments", path: "../../framework/plugins/score-payments"),
+        .package(name: "score-lucide", path: "../../framework/plugins/score-lucide"),
+        .package(name: "allegro-theme", path: "../../framework/plugins/allegro-theme"),
     ],
     targets: [
         .executableTarget(

@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="view-transition" content="same-origin"><meta property="og:type" content="website"><link rel="stylesheet" href="/global.css"><link rel="stylesheet" href="/styles/settings.css"><link rel="stylesheet" href="/styles/app-sidebar.css"><link rel="stylesheet" href="/styles/section-label.css"><script>!function(){var t=localStorage.getItem("as-theme");if(t==="true")t="dark";if(t==="false")t="light";if(t&&["dark","light"].indexOf(t)!==-1){document.documentElement.setAttribute("data-theme",t)}}()</script></head><body><div class="libretto-sidebar score-contents"><div class="sidebar score-contents"><div class="sidebar-stack"><script>
+(function() {
+  if (document.cookie.indexOf('session=') === -1 && window.location.pathname !== '/login') {
+    window.location.replace('/login');
+  }
+})();
+</script><div class="app-sidebar score-contents"><aside><div class="app-sidebar-stack"><div><a href="/"><div class="app-sidebar-stack-2"><div class="icon score-contents"><div class="icon-stack icon-feather"></div></div><div class="app-sidebar-stack-3">Libretto</div></div></a></div><nav><div class="nav-link score-contents"><a href="/blog" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-book-open"></div></div>Blog</a></div><div class="nav-link score-contents"><a href="/drafts" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-file-text"></div></div>Drafts</a></div><div class="nav-link score-contents"><a href="/write" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-pen-line"></div></div>Write</a></div><div class="nav-link score-contents"><a href="/settings" class="nav-link-link-2"><div class="icon score-contents"><div class="icon-stack-3 icon-settings"></div></div>Settings</a></div><div class="nav-link score-contents"><a href="/billing" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-credit-card"></div></div>Billing</a></div></nav></div><div class="app-sidebar-stack-4"></div></aside></div><main><section><h1>Settings</h1><p class="sidebar-text">Manage your profile and preferences.</p><div class="sidebar-stack-2"><div class="section-label score-contents"><div class="section-label-stack">PROFILE PHOTO</div></div><div class="sidebar-stack-3"><div class="sidebar-stack-4" id="settings-avatar"></div><a href="#" id="settings-upload-link">Upload from device</a></div></div><div class="sidebar-stack-5"><div class="form-field score-contents"><div class="form-field-stack"><label for="settings-displayName">Display Name</label><input type="text" name="displayName" placeholder="Your name" id="settings-displayName"></div></div><div class="sidebar-stack-6"><label for="settings-username">Username</label><input type="text" name="username" placeholder="username" id="settings-username"><div class="sidebar-stack-7" id="settings-username-helper"></div></div><div class="form-field score-contents"><div class="form-field-stack"><label for="settings-email">Email</label><input type="email" name="email" placeholder="you@example.com" id="settings-email"></div></div><div class="sidebar-stack-6"><label for="settings-bio">Bio</label><textarea name="bio" placeholder="A short bio" rows="3" id="settings-bio"></textarea><div class="sidebar-stack-8" id="settings-bio-count"></div></div></div><div class="sidebar-stack-9"><div class="section-label score-contents"><div class="section-label-stack">SOCIAL LINKS</div></div><div class="form-field score-contents"><div class="form-field-stack"><label for="settings-github">GitHub URL</label><input type="text" name="github" placeholder="https://github.com/username" id="settings-github"></div></div><div class="form-field score-contents"><div class="form-field-stack"><label for="settings-twitter">Twitter / X URL</label><input type="text" name="twitter" placeholder="https://x.com/username" id="settings-twitter"></div></div></div><div class="sidebar-stack-10"><p class="sidebar-text-2" id="settings-status"></p><button type="button" id="settings-save-btn">Save Changes</button></div></section><script>
+(function() {
+  // Bio char count
+  var bio = document.getElementById('settings-bio');
+  var bioCount = document.getElementById('settings-bio-count');
+  if (bio && bioCount) {
+    function updateBioCount() {
+      bioCount.textContent = bio.value.length + ' / 160';
+    }
+    bio.addEventListener('input', updateBioCount);
+    updateBioCount();
+  }
+
+  // Username availability
+  var usernameInput = document.getElementById('settings-username');
+  var usernameHelper = document.getElementById('settings-username-helper');
+  var usernameTimer = null;
+  if (usernameInput && usernameHelper) {
+    usernameInput.addEventListener('input', function() {
+      clearTimeout(usernameTimer);
+      var val = usernameInput.value.trim();
+      if (!val) { usernameHelper.textContent = ''; return; }
+      usernameHelper.textContent = 'Checking...';
+      usernameHelper.style.color = 'var(--color-muted)';
+      usernameTimer = setTimeout(function() {
+        usernameHelper.textContent = 'username available';
+        usernameHelper.style.color = 'var(--color-composer)';
+      }, 400);
+    });
+  }
+
+  // Load current profile
+  fetch('/api/profile', { credentials: 'include' })
+    .then(function(r) {
+      if (r.status === 401) { window.location.href = '/login'; return null; }
+      return r.ok ? r.json() : null;
+    })
+    .then(function(p) {
+      if (!p) return;
+      setValue('settings-displayName', p.displayName || '');
+      setValue('settings-username', p.username || '');
+      setValue('settings-email', p.email || '');
+      if (bio) bio.value = p.bio || '';
+      if (bio && bioCount) bioCount.textContent = (p.bio || '').length + ' / 160';
+      var links = p.socialLinks || [];
+      links.forEach(function(l) {
+        if (l.platform === 'github') setValue('settings-github', l.url);
+        else if (l.platform === 'twitter') setValue('settings-twitter', l.url);
+      });
+    })
+    .catch(function() {});
+
+  // Save
+  var btn = document.getElementById('settings-save-btn');
+  var status = document.getElementById('settings-status');
+  if (!btn) return;
+
+  btn.addEventListener('click', function() {
+    var socialLinks = [];
+    var github = getValue('settings-github');
+    var twitter = getValue('settings-twitter');
+    if (github) socialLinks.push({ platform: 'github', url: github });
+    if (twitter) socialLinks.push({ platform: 'twitter', url: twitter });
+
+    var payload = {
+      displayName: getValue('settings-displayName'),
+      username: getValue('settings-username'),
+      email: getValue('settings-email'),
+      bio: bio ? bio.value.trim() : '',
+      socialLinks: socialLinks,
+    };
+
+    btn.disabled = true;
+    status.textContent = 'Saving...';
+    fetch('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        status.textContent = 'Error: ' + data.error;
+      } else {
+        status.textContent = 'Saved!';
+      }
+    })
+    .catch(function() { status.textContent = 'Network error. Please try again.'; })
+    .finally(function() { btn.disabled = false; });
+  });
+
+  function getValue(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+  function setValue(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.value = val;
+  }
+})();
+</script></main></div></div></div></body></html>

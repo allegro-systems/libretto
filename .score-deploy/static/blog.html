@@ -1,0 +1,199 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="view-transition" content="same-origin"><meta property="og:type" content="website"><link rel="stylesheet" href="/global.css"><link rel="stylesheet" href="/styles/blog.css"><link rel="stylesheet" href="/styles/app-header.css"><script>!function(){var t=localStorage.getItem("as-theme");if(t==="true")t="dark";if(t==="false")t="light";if(t&&["dark","light"].indexOf(t)!==-1){document.documentElement.setAttribute("data-theme",t)}}()</script></head><body><div class="blog-list-stack"><div class="app-header score-contents"><header><div class="app-header-stack"><a href="/" class="app-header-link"><div class="app-header-stack-2"><div class="app-header-stack-3">Libretto</div><div class="app-header-stack-4">by Allegro</div></div></a></div><div class="app-header-stack"><div class="app-header-stack-5"><div class="icon score-contents"><div class="icon-stack icon-search"></div></div><input type="search" name="q" placeholder="Search posts, writers, topics…" id="search-input"></div></div><div class="app-header-stack-6"><div id="nav-logged-out"><a href="/login" class="app-header-link-2">Get Started</a></div><div class="app-header-stack-7" id="nav-logged-in"><a href="/write" class="app-header-link-3"><div class="icon score-contents"><div class="icon-stack-2 icon-plus"></div></div>New Post</a><a href="/settings" class="app-header-link"><div class="app-header-stack-8" id="nav-avatar"></div></a></div><script>
+(function() {
+  function showLoggedOut() {
+    var lo = document.getElementById('nav-logged-out');
+    var li = document.getElementById('nav-logged-in');
+    if (lo) lo.style.display = 'flex';
+    if (li) li.style.display = 'none';
+  }
+  fetch('/auth/me', { credentials: 'same-origin' })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(user) {
+      if (user && user.id) {
+        var lo = document.getElementById('nav-logged-out');
+        var li = document.getElementById('nav-logged-in');
+        if (lo) lo.style.display = 'none';
+        if (li) li.style.display = 'flex';
+      } else {
+        showLoggedOut();
+      }
+    })
+    .catch(function() { showLoggedOut(); });
+})();
+</script></div></header></div><section class="blog-list-section"><div class="blog-list-stack-2"><h2 class="blog-list-heading">All Posts</h2><p class="blog-list-text">Stories, ideas, and perspectives from our community of writers.</p></div><div id="blog-list-root"></div><script>
+(function() {
+  function formatDate(dateStr, format) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr);
+  if (isNaN(d)) return '';
+  var opts;
+  switch (format) {
+    case 'short':
+      opts = { month: 'short', day: 'numeric' };
+      break;
+    case 'long':
+      opts = { year: 'numeric', month: 'long', day: 'numeric' };
+      break;
+    case 'full':
+      opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      break;
+    default:
+      opts = { year: 'numeric', month: 'short', day: 'numeric' };
+      break;
+  }
+  return d.toLocaleDateString('en-US', opts);
+}
+  function renderPostCard(post, index) {
+  var layout = 'grid';
+  var maxExcerpt = 160;
+
+  var card = document.createElement('a');
+  card.href = '/@' + encodeURIComponent(post.authorId) + '/' + encodeURIComponent(post.slug);
+
+  if (layout === 'feed') {
+    card.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:24px 0;text-decoration:none;transition:opacity 0.15s;';
+    if (index > 0) card.style.borderTop = '1px solid var(--color-border)';
+    card.onmouseenter = function() { card.style.opacity = '0.8'; };
+    card.onmouseleave = function() { card.style.opacity = '1'; };
+
+    // Author row
+    var authorRow = document.createElement('div');
+    authorRow.style.cssText = 'display:flex;gap:10px;align-items:center;';
+    var avatar = document.createElement('div');
+    avatar.style.cssText = 'width:28px;height:28px;border-radius:50%;background:var(--color-accent);flex-shrink:0;';
+    authorRow.appendChild(avatar);
+    var authorInfo = document.createElement('div');
+    authorInfo.style.cssText = 'display:flex;flex-direction:column;gap:1px;';
+    var authorName = document.createElement('span');
+    authorName.style.cssText = 'font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--color-text);';
+    authorName.textContent = post.authorId;
+    authorInfo.appendChild(authorName);
+    var pub = formatDate(post.publishedAt, 'short');
+    if (pub) {
+      var dateSpan = document.createElement('span');
+      dateSpan.style.cssText = 'font-family:var(--font-mono);font-size:11px;color:var(--color-dimmer);';
+      dateSpan.textContent = pub;
+      authorInfo.appendChild(dateSpan);
+    }
+    authorRow.appendChild(authorInfo);
+    card.appendChild(authorRow);
+  } else {
+    card.style.cssText = 'background:var(--color-surface);border:1px solid var(--color-border);padding:24px;display:flex;flex-direction:column;gap:16px;text-decoration:none;transition:background 0.15s;';
+    card.onmouseenter = function() { card.style.background = 'var(--color-elevated)'; };
+    card.onmouseleave = function() { card.style.background = 'var(--color-surface)'; };
+  }
+
+  // Title
+  var title = document.createElement('div');
+  title.style.cssText = layout === 'feed'
+    ? 'font-family:var(--font-serif);font-size:20px;font-weight:600;color:var(--color-text);line-height:1.3;'
+    : 'font-family:var(--font-serif);font-size:18px;font-weight:600;color:var(--color-text);line-height:1.3;';
+  title.textContent = post.title;
+  card.appendChild(title);
+
+  // Excerpt
+  var raw = post.excerpt || post.body || '';
+  var excerpt = raw.length > maxExcerpt ? raw.slice(0, maxExcerpt) + '\u2026' : raw;
+  var excerptEl = document.createElement('p');
+  excerptEl.style.cssText = layout === 'feed'
+    ? 'font-family:var(--font-sans);font-size:14px;color:var(--color-muted);margin:0;line-height:1.6;'
+    : 'font-family:var(--font-sans);font-size:14px;color:var(--color-muted);margin:0;flex:1;line-height:1.5;';
+  excerptEl.textContent = excerpt;
+  card.appendChild(excerptEl);
+
+  // Meta row
+  var meta = document.createElement('div');
+  if (layout === 'feed') {
+    meta.style.cssText = 'display:flex;gap:16px;align-items:center;font-family:var(--font-mono);font-size:11px;color:var(--color-dimmer);margin-top:4px;';
+    var readSpan = document.createElement('span');
+    readSpan.textContent = (post.estimatedReadMinutes || 1) + ' min read';
+    meta.appendChild(readSpan);
+    if (typeof post.likeCount === 'number') {
+      var likeSpan = document.createElement('span');
+      likeSpan.textContent = '\u2665 ' + post.likeCount;
+      meta.appendChild(likeSpan);
+    }
+  } else {
+    meta.style.cssText = 'display:flex;gap:12px;align-items:center;font-family:var(--font-sans);font-size:12px;color:var(--color-muted);flex-wrap:wrap;';
+    var gridAvatar = document.createElement('div');
+    gridAvatar.style.cssText = 'width:24px;height:24px;border-radius:50%;background:var(--color-accent);flex-shrink:0;';
+    meta.appendChild(gridAvatar);
+    var authorSpan = document.createElement('span');
+    authorSpan.textContent = post.authorId;
+    meta.appendChild(authorSpan);
+    var gridPub = formatDate(post.publishedAt, 'short');
+    if (gridPub) {
+      appendDot(meta);
+      var gridDateSpan = document.createElement('span');
+      gridDateSpan.style.cssText = 'font-family:var(--font-mono);font-size:11px;color:var(--color-dimmer);';
+      gridDateSpan.textContent = gridPub;
+      meta.appendChild(gridDateSpan);
+    }
+    appendDot(meta);
+    var gridReadSpan = document.createElement('span');
+    gridReadSpan.style.cssText = 'font-family:var(--font-mono);font-size:11px;color:var(--color-dimmer);';
+    gridReadSpan.textContent = (post.estimatedReadMinutes || 1) + ' min';
+    meta.appendChild(gridReadSpan);
+    if (typeof post.likeCount === 'number') {
+      appendDot(meta);
+      var heartIcon = document.createElement('i');
+      heartIcon.className = 'lucide lucide-heart';
+      heartIcon.style.cssText = 'font-size:14px;color:var(--color-dimmer);';
+      meta.appendChild(heartIcon);
+      var gridLikeSpan = document.createElement('span');
+      gridLikeSpan.style.cssText = 'font-family:var(--font-mono);font-size:11px;color:var(--color-dimmer);';
+      gridLikeSpan.textContent = post.likeCount;
+      meta.appendChild(gridLikeSpan);
+    }
+  }
+  card.appendChild(meta);
+  return card;
+}
+
+function appendDot(parent) {
+  var d = document.createElement('span');
+  d.style.cssText = 'color:var(--color-dimmer);font-size:12px;';
+  d.textContent = '\u00b7';
+  parent.appendChild(d);
+}
+
+  var root = document.getElementById('blog-list-root');
+  if (!root) return;
+
+  root.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);';
+  root.textContent = 'Loading posts...';
+
+  fetch('/api/public/posts')
+    .then(function(res) {
+      if (!res.ok) throw new Error('failed');
+      return res.json();
+    })
+    .then(function(posts) {
+      root.textContent = '';
+
+      if (!posts || posts.length === 0) {
+        root.style.cssText = 'font-family:var(--font-sans);font-size:15px;color:var(--color-muted);text-align:center;padding:80px 0;';
+        root.textContent = 'No posts yet.';
+        return;
+      }
+
+      var style = document.createElement('style');
+      style.textContent = '@media(max-width:900px){#blog-list-root .blog-grid{grid-template-columns:repeat(2,1fr)!important}}@media(max-width:600px){#blog-list-root .blog-grid{grid-template-columns:1fr!important}}';
+      root.appendChild(style);
+
+      var grid = document.createElement('div');
+      grid.className = 'blog-grid';
+      grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:24px;';
+
+      posts.forEach(function(post, i) {
+        grid.appendChild(renderPostCard(post, i));
+      });
+
+      root.appendChild(grid);
+    })
+    .catch(function() {
+      root.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);';
+      root.textContent = 'Failed to load posts.';
+    });
+})();
+</script></section></div></body></html>

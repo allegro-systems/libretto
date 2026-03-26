@@ -9,6 +9,13 @@ import AllegroTheme
 struct LibrettoApp: Application {
     var theme: (any Theme)? { AllegroTheme() }
 
+    // swiftlint:disable:next force_try
+    private static let _localization: Localization? = try! Localization(
+        catalog: StringCatalog.load(from: "Localizable.xcstrings")
+    )
+
+    var localization: Localization? { Self._localization }
+
     var plugins: [any ScorePlugin] {
         [
             LucidePlugin(),

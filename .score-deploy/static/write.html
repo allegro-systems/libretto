@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="view-transition" content="same-origin"><meta property="og:type" content="website"><link rel="stylesheet" href="/global.css"><link rel="stylesheet" href="/styles/write.css"><script>!function(){var t=localStorage.getItem("as-theme");if(t==="true")t="dark";if(t==="false")t="light";if(t&&["dark","light"].indexOf(t)!==-1){document.documentElement.setAttribute("data-theme",t)}}()</script></head><body><div class="editor-stack"><div class="editor-stack-2"><a href="/drafts" class="editor-link"><div class="editor-stack-3"><div class="icon score-contents"><div class="icon-stack icon-arrow-left"></div></div>Back</div></a><div class="editor-stack-4"></div><div class="editor-stack-5" id="editor-word-count"></div><button type="button" class="editor-button" id="btn-save-draft">Save Draft</button><button type="button" class="editor-button-2" id="btn-publish">Publish</button></div><section class="editor-section"><input type="text" name="title" placeholder="Post title…" id="editor-title" class="editor-input"></section><div class="editor-stack-6"><div class="toolbar-button score-contents"><button type="button" title="Bold" id="btn-bold"><div class="icon score-contents"><div class="icon-stack icon-bold"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Italic" id="btn-italic"><div class="icon score-contents"><div class="icon-stack icon-italic"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Strikethrough" id="btn-strikethrough"><div class="icon score-contents"><div class="icon-stack icon-strikethrough"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Link" id="btn-link"><div class="icon score-contents"><div class="icon-stack icon-link"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Blockquote" id="btn-quote"><div class="icon score-contents"><div class="icon-stack icon-quote"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Inline code" id="btn-code"><div class="icon score-contents"><div class="icon-stack icon-code"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Image" id="btn-image"><div class="icon score-contents"><div class="icon-stack icon-image"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Bullet list" id="btn-list"><div class="icon score-contents"><div class="icon-stack icon-list"></div></div></button></div><div class="toolbar-button score-contents"><button type="button" title="Heading" id="btn-heading"><div class="icon score-contents"><div class="icon-stack icon-heading"></div></div></button></div></div><section class="editor-section-2"><div class="editor-textarea"><textarea name="body" placeholder="Write in Markdown…" id="editor-body"></textarea></div></section><div class="editor-stack-7"><div class="editor-stack-8" id="editor-char-count"></div><div class="editor-stack-8" id="editor-word-count-bar"></div><div class="editor-stack-8" id="editor-read-time"></div><div class="editor-stack-4"></div><div class="editor-stack-8" id="editor-status"></div></div><script>
+(function() {
+  var textarea = document.getElementById('editor-body');
+  var title    = document.getElementById('editor-title');
+  var status   = document.getElementById('editor-status');
+  var wordCountTop = document.getElementById('editor-word-count');
+  var charCount    = document.getElementById('editor-char-count');
+  var wordCountBar = document.getElementById('editor-word-count-bar');
+  var readTime     = document.getElementById('editor-read-time');
+
+  function countWords(text) {
+    var trimmed = text.trim();
+    if (!trimmed) return 0;
+    return trimmed.split(/\s+/).length;
+  }
+
+  function updateStats() {
+    if (!textarea) return;
+    var text = textarea.value;
+    var words = countWords(text);
+    var chars = text.length;
+    var minutes = Math.max(1, Math.ceil(words / 200));
+    if (wordCountTop) wordCountTop.textContent = words + ' words';
+    if (charCount) charCount.textContent = chars + ' chars';
+    if (wordCountBar) wordCountBar.textContent = words + ' words';
+    if (readTime) readTime.textContent = minutes + ' min read';
+  }
+
+  if (textarea) textarea.addEventListener('input', updateStats);
+  if (title) title.addEventListener('input', updateStats);
+  updateStats();
+
+  // Toolbar helpers
+  function wrapSelection(prefix, suffix) {
+    if (!textarea) return;
+    var start = textarea.selectionStart;
+    var end   = textarea.selectionEnd;
+    var sel   = textarea.value.substring(start, end) || 'text';
+    var repl  = prefix + sel + suffix;
+    textarea.value = textarea.value.substring(0, start) + repl + textarea.value.substring(end);
+    textarea.selectionStart = start + prefix.length;
+    textarea.selectionEnd   = start + prefix.length + sel.length;
+    textarea.focus();
+    updateStats();
+  }
+
+  function prependLine(prefix) {
+    if (!textarea) return;
+    var start     = textarea.selectionStart;
+    var lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
+    var lineEnd   = textarea.value.indexOf('\n', start);
+    if (lineEnd === -1) lineEnd = textarea.value.length;
+    var line = textarea.value.substring(lineStart, lineEnd);
+    textarea.value = textarea.value.substring(0, lineStart) + prefix + line + textarea.value.substring(lineEnd);
+    textarea.selectionStart = lineStart + prefix.length;
+    textarea.selectionEnd   = lineStart + prefix.length + line.length;
+    textarea.focus();
+    updateStats();
+  }
+
+  function bindBtn(id, fn) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', fn);
+  }
+
+  bindBtn('btn-bold',          function() { wrapSelection('**', '**'); });
+  bindBtn('btn-italic',        function() { wrapSelection('*', '*'); });
+  bindBtn('btn-strikethrough', function() { wrapSelection('~~', '~~'); });
+  bindBtn('btn-heading',       function() { prependLine('## '); });
+  bindBtn('btn-link',          function() { wrapSelection('[', '](https://)'); });
+  bindBtn('btn-code',          function() { wrapSelection('`', '`'); });
+  bindBtn('btn-list',          function() { prependLine('- '); });
+  bindBtn('btn-quote',         function() { prependLine('> '); });
+  bindBtn('btn-image',         function() { wrapSelection('![', '](https://)'); });
+
+  // Load existing post
+  function getPostIdFromUrl() {
+    var parts = window.location.pathname.split('/').filter(Boolean);
+    if (parts.length >= 2 && parts[0] === 'write') return parts[1];
+    return null;
+  }
+
+  var currentPostId = getPostIdFromUrl();
+
+  if (currentPostId) {
+    fetch('/api/posts/' + currentPostId, { credentials: 'include' })
+      .then(function(r) { return r.json(); })
+      .then(function(post) {
+        if (title)    title.value    = post.title || '';
+        if (textarea) textarea.value = post.body  || '';
+        updateStats();
+      })
+      .catch(function() {
+        if (status) status.textContent = 'Failed to load post.';
+      });
+  }
+
+  // Save / Publish
+  async function savePost(publish) {
+    var t = title    ? title.value.trim() : '';
+    var b = textarea ? textarea.value     : '';
+    if (!t) { if (status) status.textContent = 'Title is required.'; return; }
+    if (status) status.textContent = 'Saving\u2026';
+
+    try {
+      var res, data;
+      if (currentPostId) {
+        res = await fetch('/api/posts/' + currentPostId, {
+          method: 'PUT', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: t, body: b })
+        });
+      } else {
+        res = await fetch('/api/posts', {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: t, body: b })
+        });
+      }
+      data = await res.json();
+      if (!res.ok) { if (status) status.textContent = data.error || 'Save failed.'; return; }
+      if (!currentPostId && data.id) {
+        currentPostId = data.id;
+        history.replaceState(null, '', '/write/' + data.id);
+      }
+
+      if (publish && currentPostId) {
+        var pRes  = await fetch('/api/posts/' + currentPostId + '/publish', { method: 'POST', credentials: 'include' });
+        var pData = await pRes.json();
+        if (!pRes.ok) { if (status) status.textContent = pData.error || 'Publish failed.'; return; }
+        if (status) status.textContent = 'Published!';
+      } else {
+        var now = new Date();
+        if (status) status.textContent = 'Last saved ' + now.toLocaleTimeString();
+      }
+    } catch (e) {
+      if (status) status.textContent = 'Network error.';
+    }
+  }
+
+  var draftBtn   = document.getElementById('btn-save-draft');
+  var publishBtn = document.getElementById('btn-publish');
+  if (draftBtn)   draftBtn.addEventListener('click',   function() { savePost(false); });
+  if (publishBtn) publishBtn.addEventListener('click', function() { savePost(true);  });
+})();
+</script></div></body></html>

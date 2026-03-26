@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="view-transition" content="same-origin"><meta property="og:type" content="website"><link rel="stylesheet" href="/global.css"><link rel="stylesheet" href="/styles/billing.css"><link rel="stylesheet" href="/styles/app-sidebar.css"><link rel="stylesheet" href="/styles/section-label.css"><script>!function(){var t=localStorage.getItem("as-theme");if(t==="true")t="dark";if(t==="false")t="light";if(t&&["dark","light"].indexOf(t)!==-1){document.documentElement.setAttribute("data-theme",t)}}()</script></head><body><div class="libretto-sidebar score-contents"><div class="sidebar score-contents"><div class="sidebar-stack"><script>
+(function() {
+  if (document.cookie.indexOf('session=') === -1 && window.location.pathname !== '/login') {
+    window.location.replace('/login');
+  }
+})();
+</script><div class="app-sidebar score-contents"><aside><div class="app-sidebar-stack"><div><a href="/"><div class="app-sidebar-stack-2"><div class="icon score-contents"><div class="icon-stack icon-feather"></div></div><div class="app-sidebar-stack-3">Libretto</div></div></a></div><nav><div class="nav-link score-contents"><a href="/blog" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-book-open"></div></div>Blog</a></div><div class="nav-link score-contents"><a href="/drafts" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-file-text"></div></div>Drafts</a></div><div class="nav-link score-contents"><a href="/write" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-pen-line"></div></div>Write</a></div><div class="nav-link score-contents"><a href="/settings" class="nav-link-link"><div class="icon score-contents"><div class="icon-stack-2 icon-settings"></div></div>Settings</a></div><div class="nav-link score-contents"><a href="/billing" class="nav-link-link-2"><div class="icon score-contents"><div class="icon-stack-3 icon-credit-card"></div></div>Billing</a></div></nav></div><div class="app-sidebar-stack-4"></div></aside></div><main><section><h1>Billing</h1><p class="sidebar-text">Manage your plan and usage.</p><div class="sidebar-stack-2"><div class="sidebar-stack-3"><div class="section-label score-contents"><div class="section-label-stack">CURRENT PLAN</div></div><div id="billing-plan-badge"></div></div><h2 id="billing-plan-name"></h2><p class="sidebar-text-2" id="billing-plan-description">Loading plan details...</p><div class="sidebar-stack-4"><a href="/billing/checkout">Upgrade to Pro</a></div></div><div class="sidebar-stack-2"><div class="section-label score-contents"><div class="section-label-stack">PLAN COMPARISON</div></div><div class="sidebar-stack-5"><div class="plan-comparison-row score-contents"><div class="plan-comparison-row-stack"><div class="plan-comparison-row-stack-2">Feature</div><div class="plan-comparison-row-stack-3">Free</div><div class="plan-comparison-row-stack-3">Pro</div></div></div><div class="plan-comparison-row score-contents"><div class="plan-comparison-row-stack"><div class="plan-comparison-row-stack-4">Collections</div><div class="plan-comparison-row-stack-5">Up to 100</div><div class="plan-comparison-row-stack-5">Unlimited</div></div></div><div class="plan-comparison-row score-contents"><div class="plan-comparison-row-stack"><div class="plan-comparison-row-stack-4">Storage</div><div class="plan-comparison-row-stack-5">500 MB</div><div class="plan-comparison-row-stack-5">5 GB</div></div></div><div class="plan-comparison-row score-contents"><div class="plan-comparison-row-stack"><div class="plan-comparison-row-stack-4">Custom domain</div><div class="plan-comparison-row-stack-5">—</div><div class="plan-comparison-row-stack-5">✓</div></div></div><div class="plan-comparison-row score-contents"><div class="plan-comparison-row-stack-6"><div class="plan-comparison-row-stack-4">Priority support</div><div class="plan-comparison-row-stack-5">—</div><div class="plan-comparison-row-stack-5">✓</div></div></div></div></div><div class="sidebar-stack-6"><div class="section-label score-contents"><div class="section-label-stack">USAGE</div></div><div class="usage-bar score-contents"><div class="usage-bar-stack"><div class="usage-bar-stack-2"><div class="usage-bar-stack-3">Collections</div><div class="usage-bar-stack-4" id="usage-collections-label">—</div></div><div class="usage-bar-stack-5"><div class="usage-bar-stack-6" id="usage-collections-fill"></div></div></div></div><div class="usage-bar score-contents"><div class="usage-bar-stack"><div class="usage-bar-stack-2"><div class="usage-bar-stack-3">Storage</div><div class="usage-bar-stack-4" id="usage-storage-label">—</div></div><div class="usage-bar-stack-5"><div class="usage-bar-stack-6" id="usage-storage-fill"></div></div></div></div></div><div class="sidebar-stack-2"><div class="section-label score-contents"><div class="section-label-stack">PAYMENT HISTORY</div></div><div id="payment-history-container"><p class="sidebar-text-3" id="payment-history-placeholder">No payment history yet.</p></div></div></section><script>
+(function() {
+  var PLAN_LABELS = { free: 'Free', pro: 'Pro' };
+  var PLAN_DESC  = {
+    free: 'Up to 100 collections, 500 MB storage.',
+    pro:  'Unlimited collections, 5 GB storage, custom domain, priority support.'
+  };
+
+  function formatBytes(b) {
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; if (b < 1073741824) return (b / 1048576).toFixed(1) + ' MB'; return (b / 1073741824).toFixed(2) + ' GB'; } function setBar(fillId, labelId, used, limit, fmt) { var fill = document.getElementById(fillId); var label = document.getElementById(labelId); if (!fill || !label) return; var pct = limit> 0 ? Math.min(100, (used / limit) * 100) : 0;
+    fill.style.width = pct.toFixed(1) + '%';
+    label.textContent = limit === 0
+      ? fmt(used) + ' / Unlimited'
+      : fmt(used) + ' / ' + fmt(limit);
+  }
+
+  function makeBadge(plan) {
+    var span = document.createElement('span');
+    span.textContent = PLAN_LABELS[plan] || plan;
+    span.style.cssText = 'background:var(--color-elevated);border:1px solid var(--color-border);font-family:var(--font-mono);font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;text-transform:capitalize;color:var(--color-text)';
+    return span;
+  }
+
+  function buildPaymentRow(p) {
+    var tr = document.createElement('tr');
+    var cellStyle = 'padding:10px 12px;border-bottom:1px solid var(--color-border);font-family:var(--font-sans);font-size:13px';
+    var cells = [p.date || '', p.description || '', p.amount || '', p.status || ''];
+    cells.forEach(function(text, i) {
+      var td = document.createElement('td');
+      td.textContent = text;
+      td.style.cssText = cellStyle + (i >= 2 ? ';text-align:right' : '');
+      tr.appendChild(td);
+    });
+    return tr;
+  }
+
+  fetch('/api/billing')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var plan = data.plan || 'free';
+
+      var badgeEl = document.getElementById('billing-plan-badge');
+      if (badgeEl) badgeEl.appendChild(makeBadge(plan));
+
+      var nameEl = document.getElementById('billing-plan-name');
+      if (nameEl) nameEl.textContent = PLAN_LABELS[plan] || plan;
+
+      var desc = document.getElementById('billing-plan-description');
+      if (desc) desc.textContent = PLAN_DESC[plan] || '';
+
+      var u = data.usage || {};
+      if (u.collections) {
+        setBar('usage-collections-fill', 'usage-collections-label',
+          u.collections.used, u.collections.limit, function(v) { return String(v); });
+      }
+      if (u.storageBytes) {
+        setBar('usage-storage-fill', 'usage-storage-label',
+          u.storageBytes.used, u.storageBytes.limit, formatBytes);
+      }
+
+      var history = data.paymentHistory;
+      if (history && history.length > 0) {
+        var placeholder = document.getElementById('payment-history-placeholder');
+        if (placeholder) placeholder.style.display = 'none';
+        var container = document.getElementById('payment-history-container');
+        if (container) {
+          var table = document.createElement('table');
+          table.style.cssText = 'width:100%;border-collapse:collapse;font-family:var(--font-sans);font-size:13px;color:var(--color-text)';
+          var thead = document.createElement('thead');
+          var headerRow = document.createElement('tr');
+          ['Date', 'Description', 'Amount', 'Status'].forEach(function(text, i) {
+            var th = document.createElement('th');
+            th.textContent = text;
+            th.style.cssText = 'text-align:' + (i >= 2 ? 'right' : 'left') +
+              ';padding:10px 12px;border-bottom:1px solid var(--color-border);font-family:var(--font-mono);font-size:11px;color:var(--color-muted);text-transform:uppercase;letter-spacing:0.05em;font-weight:500';
+            headerRow.appendChild(th);
+          });
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+          var tbody = document.createElement('tbody');
+          history.forEach(function(p) { tbody.appendChild(buildPaymentRow(p)); });
+          table.appendChild(tbody);
+          container.appendChild(table);
+        }
+      }
+    })
+    .catch(function(e) { console.error('Failed to load billing data:', e); });
+})();
+</script></main></div></div></div></body></html>

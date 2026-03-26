@@ -1,0 +1,1416 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "billing.comparison.collections": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collections"
+          }
+        }
+      }
+    },
+    "billing.comparison.collections.free": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to 100"
+          }
+        }
+      }
+    },
+    "billing.comparison.collections.pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlimited"
+          }
+        }
+      }
+    },
+    "billing.comparison.domain": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom domain"
+          }
+        }
+      }
+    },
+    "billing.comparison.feature": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feature"
+          }
+        }
+      }
+    },
+    "billing.comparison.free": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free"
+          }
+        }
+      }
+    },
+    "billing.comparison.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PLAN COMPARISON"
+          }
+        }
+      }
+    },
+    "billing.comparison.pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
+    "billing.comparison.storage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage"
+          }
+        }
+      }
+    },
+    "billing.comparison.storage.free": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "500 MB"
+          }
+        }
+      }
+    },
+    "billing.comparison.storage.pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 GB"
+          }
+        }
+      }
+    },
+    "billing.comparison.support": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Priority support"
+          }
+        }
+      }
+    },
+    "billing.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Billing"
+          }
+        }
+      }
+    },
+    "billing.history.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No payment history yet."
+          }
+        }
+      }
+    },
+    "billing.history.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PAYMENT HISTORY"
+          }
+        }
+      }
+    },
+    "billing.plan.free": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free"
+          }
+        }
+      }
+    },
+    "billing.plan.free.description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to 100 collections, 500 MB storage."
+          }
+        }
+      }
+    },
+    "billing.plan.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CURRENT PLAN"
+          }
+        }
+      }
+    },
+    "billing.plan.loading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading plan details..."
+          }
+        }
+      }
+    },
+    "billing.plan.pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
+    "billing.plan.pro.description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlimited collections, 5 GB storage, custom domain, priority support."
+          }
+        }
+      }
+    },
+    "billing.plan.upgrade": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to Pro"
+          }
+        }
+      }
+    },
+    "billing.subheading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage your plan and usage."
+          }
+        }
+      }
+    },
+    "billing.usage.collections": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collections"
+          }
+        }
+      }
+    },
+    "billing.usage.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "USAGE"
+          }
+        }
+      }
+    },
+    "billing.usage.storage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage"
+          }
+        }
+      }
+    },
+    "blog.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No posts yet."
+          }
+        }
+      }
+    },
+    "blog.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to load posts."
+          }
+        }
+      }
+    },
+    "blog.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All Posts"
+          }
+        }
+      }
+    },
+    "blog.loading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading posts..."
+          }
+        }
+      }
+    },
+    "blog.subheading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stories, ideas, and perspectives from our community of writers."
+          }
+        }
+      }
+    },
+    "checkout.button.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm Upgrade"
+          }
+        }
+      }
+    },
+    "checkout.features.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PRO PLAN FEATURES"
+          }
+        }
+      }
+    },
+    "checkout.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to Pro"
+          }
+        }
+      }
+    },
+    "checkout.payment.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PAYMENT DETAILS"
+          }
+        }
+      }
+    },
+    "checkout.payment.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revolut card field will appear here."
+          }
+        }
+      }
+    },
+    "checkout.plan.description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlimited collections, 5 GB storage, custom domain, priority support"
+          }
+        }
+      }
+    },
+    "checkout.plan.price": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "$9 / month"
+          }
+        }
+      }
+    },
+    "checkout.plan.pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
+    "checkout.status.creating": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creating checkout session..."
+          }
+        }
+      }
+    },
+    "checkout.status.redirecting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session created. Redirecting to payment..."
+          }
+        }
+      }
+    },
+    "drafts.delete.confirm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this draft?"
+          }
+        }
+      }
+    },
+    "drafts.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No drafts yet. Write your first post!"
+          }
+        }
+      }
+    },
+    "drafts.error": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to load drafts. Are you signed in?"
+          }
+        }
+      }
+    },
+    "drafts.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Drafts"
+          }
+        }
+      }
+    },
+    "drafts.nav.blog": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blog"
+          }
+        }
+      }
+    },
+    "drafts.nav.drafts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drafts"
+          }
+        }
+      }
+    },
+    "drafts.nav.newpost": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Post"
+          }
+        }
+      }
+    },
+    "drafts.nav.write": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write"
+          }
+        }
+      }
+    },
+    "drafts.table.actions": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actions"
+          }
+        }
+      }
+    },
+    "drafts.table.date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date"
+          }
+        }
+      }
+    },
+    "drafts.table.edit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit"
+          }
+        }
+      }
+    },
+    "drafts.table.status.draft": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "draft"
+          }
+        }
+      }
+    },
+    "drafts.table.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title"
+          }
+        }
+      }
+    },
+    "drafts.table.untitled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(Untitled)"
+          }
+        }
+      }
+    },
+    "drafts.table.words": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Words"
+          }
+        }
+      }
+    },
+    "editor.body.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write in Markdown…"
+          }
+        }
+      }
+    },
+    "editor.button.publish": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publish"
+          }
+        }
+      }
+    },
+    "editor.button.saveDraft": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Draft"
+          }
+        }
+      }
+    },
+    "editor.char.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chars"
+          }
+        }
+      }
+    },
+    "editor.nav.back": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        }
+      }
+    },
+    "editor.readtime.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "min read"
+          }
+        }
+      }
+    },
+    "editor.status.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save failed."
+          }
+        }
+      }
+    },
+    "editor.status.loadFailed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to load post."
+          }
+        }
+      }
+    },
+    "editor.status.networkError": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network error."
+          }
+        }
+      }
+    },
+    "editor.status.publishFailed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Publish failed."
+          }
+        }
+      }
+    },
+    "editor.status.published": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Published!"
+          }
+        }
+      }
+    },
+    "editor.status.required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Title is required."
+          }
+        }
+      }
+    },
+    "editor.status.saving": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saving…"
+          }
+        }
+      }
+    },
+    "editor.title.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Post title…"
+          }
+        }
+      }
+    },
+    "editor.toolbar.bold": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bold"
+          }
+        }
+      }
+    },
+    "editor.toolbar.code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inline code"
+          }
+        }
+      }
+    },
+    "editor.toolbar.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heading"
+          }
+        }
+      }
+    },
+    "editor.toolbar.image": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image"
+          }
+        }
+      }
+    },
+    "editor.toolbar.italic": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Italic"
+          }
+        }
+      }
+    },
+    "editor.toolbar.link": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link"
+          }
+        }
+      }
+    },
+    "editor.toolbar.list": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bullet list"
+          }
+        }
+      }
+    },
+    "editor.toolbar.quote": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blockquote"
+          }
+        }
+      }
+    },
+    "editor.toolbar.strikethrough": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strikethrough"
+          }
+        }
+      }
+    },
+    "editor.word.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "words"
+          }
+        }
+      }
+    },
+    "error.403.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Access Denied"
+          }
+        }
+      }
+    },
+    "error.404.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Page Not Found"
+          }
+        }
+      }
+    },
+    "error.500.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something Went Wrong"
+          }
+        }
+      }
+    },
+    "error.backHome": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to Home"
+          }
+        }
+      }
+    },
+    "error.default.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error"
+          }
+        }
+      }
+    },
+    "landing.about.cta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Writing"
+          }
+        }
+      }
+    },
+    "landing.about.description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Libretto is a writing platform where ideas find their audience. Read, write, and connect."
+          }
+        }
+      }
+    },
+    "landing.feed.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent Posts"
+          }
+        }
+      }
+    },
+    "landing.posts.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No posts yet — be the first to write something."
+          }
+        }
+      }
+    },
+    "landing.posts.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load posts."
+          }
+        }
+      }
+    },
+    "landing.posts.loading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading posts..."
+          }
+        }
+      }
+    },
+    "landing.posts.readtime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "min read"
+          }
+        }
+      }
+    },
+    "landing.topics.design": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Design"
+          }
+        }
+      }
+    },
+    "landing.topics.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TOPICS"
+          }
+        }
+      }
+    },
+    "landing.topics.opensource": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Source"
+          }
+        }
+      }
+    },
+    "landing.topics.productivity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Productivity"
+          }
+        }
+      }
+    },
+    "landing.topics.swift": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swift"
+          }
+        }
+      }
+    },
+    "landing.topics.webdev": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web Development"
+          }
+        }
+      }
+    },
+    "landing.topics.writing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writing"
+          }
+        }
+      }
+    },
+    "nav.billing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Billing"
+          }
+        }
+      }
+    },
+    "nav.blog": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blog"
+          }
+        }
+      }
+    },
+    "nav.drafts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drafts"
+          }
+        }
+      }
+    },
+    "nav.getstarted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Started"
+          }
+        }
+      }
+    },
+    "nav.logo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Libretto"
+          }
+        }
+      }
+    },
+    "nav.logo.subtitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "by Allegro"
+          }
+        }
+      }
+    },
+    "nav.newpost": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Post"
+          }
+        }
+      }
+    },
+    "nav.search.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search posts, writers, topics…"
+          }
+        }
+      }
+    },
+    "nav.settings": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+    "nav.write": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write"
+          }
+        }
+      }
+    },
+    "post.comments.button": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Post Comment"
+          }
+        }
+      }
+    },
+    "post.comments.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No comments yet. Be the first!"
+          }
+        }
+      }
+    },
+    "post.comments.error.empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comment cannot be empty."
+          }
+        }
+      }
+    },
+    "post.comments.error.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to post comment."
+          }
+        }
+      }
+    },
+    "post.comments.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comments"
+          }
+        }
+      }
+    },
+    "post.comments.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a comment…"
+          }
+        }
+      }
+    },
+    "post.like.aria": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Like"
+          }
+        }
+      }
+    },
+    "post.loading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading..."
+          }
+        }
+      }
+    },
+    "post.notFound": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Post not found."
+          }
+        }
+      }
+    },
+    "settings.bio.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bio"
+          }
+        }
+      }
+    },
+    "settings.bio.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A short bio"
+          }
+        }
+      }
+    },
+    "settings.button.save": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Changes"
+          }
+        }
+      }
+    },
+    "settings.displayname.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display Name"
+          }
+        }
+      }
+    },
+    "settings.displayname.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your name"
+          }
+        }
+      }
+    },
+    "settings.email.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email"
+          }
+        }
+      }
+    },
+    "settings.email.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "you@example.com"
+          }
+        }
+      }
+    },
+    "settings.github.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub URL"
+          }
+        }
+      }
+    },
+    "settings.github.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "https://github.com/username"
+          }
+        }
+      }
+    },
+    "settings.heading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+    "settings.photo.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PROFILE PHOTO"
+          }
+        }
+      }
+    },
+    "settings.photo.upload": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upload from device"
+          }
+        }
+      }
+    },
+    "settings.social.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SOCIAL LINKS"
+          }
+        }
+      }
+    },
+    "settings.status.networkerror": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network error. Please try again."
+          }
+        }
+      }
+    },
+    "settings.status.saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved!"
+          }
+        }
+      }
+    },
+    "settings.status.saving": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saving..."
+          }
+        }
+      }
+    },
+    "settings.subheading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage your profile and preferences."
+          }
+        }
+      }
+    },
+    "settings.twitter.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Twitter / X URL"
+          }
+        }
+      }
+    },
+    "settings.twitter.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "https://x.com/username"
+          }
+        }
+      }
+    },
+    "settings.username.available": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "username available"
+          }
+        }
+      }
+    },
+    "settings.username.checking": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking..."
+          }
+        }
+      }
+    },
+    "settings.username.label": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Username"
+          }
+        }
+      }
+    },
+    "settings.username.placeholder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "username"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

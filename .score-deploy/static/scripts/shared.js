@@ -1,0 +1,1 @@
+{document.querySelector("[data-s=\"0\"]").addEventListener("click",submitCheckout());}

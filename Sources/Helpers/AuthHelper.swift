@@ -21,7 +21,7 @@ final class AuthHelper: Sendable {
             configuration: MagicLinkConfiguration(baseURL: baseURL),
             sender: ResendMagicLinkSender(
                 apiKey: resendKey,
-                from: "Libretto <onboarding@resend.dev>",
+                from: "Libretto <noreply@maclong.dev>",
                 subject: "Sign in to Libretto",
                 productName: "Libretto"
             )

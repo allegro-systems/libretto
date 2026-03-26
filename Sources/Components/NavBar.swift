@@ -1,5 +1,6 @@
 import Score
 import ScoreLucide
+import AllegroTheme
 
 struct NavBar: Node {
     var body: some Node {
@@ -36,6 +37,9 @@ struct NavBar: Node {
             .flex(.row, justify: .center)
             .flexItem(grow: 1)
             .compact { $0.hidden() }
+
+            // Language selector
+            LanguageDropdown()
 
             // Right — logged-out state (shown by default, hidden when authed)
             Stack {

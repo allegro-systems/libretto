@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="view-transition" content="same-origin"><meta property="og:type" content="website"><link rel="stylesheet" href="/global.css"><link rel="stylesheet" href="/styles/login.css"><script>!function(){var t=localStorage.getItem("as-theme");if(t==="true")t="dark";if(t==="false")t="light";if(t&&["dark","light"].indexOf(t)!==-1){document.documentElement.setAttribute("data-theme",t)}}()</script></head><body><div class="auth-login score-contents"><div class="auth-login-stack"><div class="auth-brand-panel score-contents"><section style="background: radial-gradient(ellipse 80% 60% at 0% 0%, #c8a96ed9, transparent), radial-gradient(ellipse 60% 60% at 100% 100%, #6ec88ad9, transparent), radial-gradient(ellipse 60% 60% at 50% 50%, #3d302000, transparent), linear-gradient(135deg, #1a1814 0%, #3d3020 100%);"><div class="auth-brand-panel-stack"><h1>Libretto</h1><p class="auth-brand-panel-text">Write. Publish. Connect.</p><p class="auth-brand-panel-text-2">A distraction-free writing platform for creators who value craft over clicks.</p></div><div class="auth-brand-panel-stack-2"><div class="auth-feature-bullet score-contents"><div class="auth-feature-bullet-stack"><div class="icon score-contents"><div class="icon-stack icon-pen-line"></div></div><div class="auth-feature-bullet-stack-2">Split-pane Markdown editor with live preview</div></div></div><div class="auth-feature-bullet score-contents"><div class="auth-feature-bullet-stack"><div class="icon score-contents"><div class="icon-stack icon-users"></div></div><div class="auth-feature-bullet-stack-2">Public profiles, likes, and comments</div></div></div><div class="auth-feature-bullet score-contents"><div class="auth-feature-bullet-stack"><div class="icon score-contents"><div class="icon-stack icon-rss"></div></div><div class="auth-feature-bullet-stack-2">Built-in RSS syndication and custom domains</div></div></div><div class="auth-feature-bullet score-contents"><div class="auth-feature-bullet-stack"><div class="icon score-contents"><div class="icon-stack icon-sparkles"></div></div><div class="auth-feature-bullet-stack-2">No ads, no tracking — just your words</div></div></div></div><a href="https://allegro.systems">allegro.systems</a></section></div><div class="auth-form-panel score-contents"><div class="auth-form-panel-stack"><div class="auth-form-panel-stack-2"><h2>Sign in to Libretto</h2><p class="auth-form-panel-text">Enter your email to receive a magic link</p><div class="auth-form-panel-stack-3">EMAIL ADDRESS</div><div class="auth-form-panel-stack-4"><div class="icon score-contents"><div class="icon-stack-2 icon-mail"></div></div><input type="email" name="email" placeholder="you@example.com" id="magic-link-email"></div><button type="button" id="magic-link-btn"><div class="auth-form-panel-stack-5"><div class="icon score-contents"><div class="icon-stack-3 icon-wand-sparkles"></div></div>Send Magic Link</div></button></div><p class="auth-form-panel-text-2" id="magic-link-status"></p><div class="auth-divider score-contents"><div class="auth-divider-stack"><div class="auth-divider-stack-2"></div><div class="auth-divider-stack-3">or</div><div class="auth-divider-stack-2"></div></div></div><div class="auth-form-panel-stack-2"><a href="/auth/oauth/github/login"><div class="auth-form-panel-stack-6"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>Continue with GitHub</div></a><div class="auth-passkey-button score-contents"><button type="button" id="passkey-btn"><div class="auth-passkey-button-stack"><div class="icon score-contents"><div class="icon-stack-4 icon-key-round"></div></div>Continue with Passkey</div></button></div></div></div></div><script>
+(function() {
+  var btn = document.getElementById('magic-link-btn');
+  var input = document.getElementById('magic-link-email');
+  var status = document.getElementById('magic-link-status');
+  if (!btn || !input) return;
+
+  btn.addEventListener('click', async function() {
+    var email = input.value.trim();
+    if (!email) { status.textContent = 'Please enter your email.'; return; }
+    btn.disabled = true;
+    status.textContent = 'Sending...';
+    try {
+      var res = await fetch('/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+      var data = await res.json();
+      status.textContent = data.message || data.error || 'Something went wrong.';
+    } catch (e) {
+      status.textContent = 'Network error. Please try again.';
+    }
+    btn.disabled = false;
+  });
+
+  var pkBtn = document.getElementById('passkey-btn');
+  if (pkBtn) {
+    pkBtn.addEventListener('click', async function() {
+      if (!window.PublicKeyCredential) {
+        status.textContent = 'Passkeys are not supported in this browser.';
+        return;
+      }
+      status.textContent = 'Starting passkey authentication...';
+      try {
+        var optRes = await fetch('/auth/passkey/options', { method: 'POST' });
+        var opts = await optRes.json();
+        opts.challenge = Uint8Array.from(atob(opts.challenge), c => c.charCodeAt(0));
+        if (opts.allowCredentials) {
+          opts.allowCredentials = opts.allowCredentials.map(c => ({
+            ...c, id: Uint8Array.from(atob(c.id), ch => ch.charCodeAt(0))
+          }));
+        }
+        var cred = await navigator.credentials.get({ publicKey: opts });
+        var body = {
+          id: cred.id,
+          rawId: btoa(String.fromCharCode(...new Uint8Array(cred.rawId))),
+          response: {
+            authenticatorData: btoa(String.fromCharCode(...new Uint8Array(cred.response.authenticatorData))),
+            clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(cred.response.clientDataJSON))),
+            signature: btoa(String.fromCharCode(...new Uint8Array(cred.response.signature)))
+          },
+          type: cred.type
+        };
+        var verRes = await fetch('/auth/passkey/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (verRes.redirected) { window.location.href = verRes.url; return; }
+        var result = await verRes.json();
+        if (result.success) { window.location.href = '/'; }
+        else { status.textContent = result.error || 'Passkey verification failed.'; }
+      } catch (e) {
+        status.textContent = 'Passkey error: ' + e.message;
+      }
+    });
+  }
+})();
+</script></div></div></body></html>

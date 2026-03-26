@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="view-transition" content="same-origin"><meta property="og:type" content="website"><link rel="stylesheet" href="/global.css"><link rel="stylesheet" href="/styles/post.css"><link rel="stylesheet" href="/styles/app-header.css"><script>!function(){var t=localStorage.getItem("as-theme");if(t==="true")t="dark";if(t==="false")t="light";if(t&&["dark","light"].indexOf(t)!==-1){document.documentElement.setAttribute("data-theme",t)}}()</script></head><body><div class="post-stack"><div class="app-header score-contents"><header><div class="app-header-stack"><a href="/" class="app-header-link"><div class="app-header-stack-2"><div class="app-header-stack-3">Libretto</div><div class="app-header-stack-4">by Allegro</div></div></a></div><div class="app-header-stack"><div class="app-header-stack-5"><div class="icon score-contents"><div class="icon-stack icon-search"></div></div><input type="search" name="q" placeholder="Search posts, writers, topics…" id="search-input"></div></div><div class="app-header-stack-6"><div id="nav-logged-out"><a href="/login" class="app-header-link-2">Get Started</a></div><div class="app-header-stack-7" id="nav-logged-in"><a href="/write" class="app-header-link-3"><div class="icon score-contents"><div class="icon-stack-2 icon-plus"></div></div>New Post</a><a href="/settings" class="app-header-link"><div class="app-header-stack-8" id="nav-avatar"></div></a></div><script>
+(function() {
+  function showLoggedOut() {
+    var lo = document.getElementById('nav-logged-out');
+    var li = document.getElementById('nav-logged-in');
+    if (lo) lo.style.display = 'flex';
+    if (li) li.style.display = 'none';
+  }
+  fetch('/auth/me', { credentials: 'same-origin' })
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(user) {
+      if (user && user.id) {
+        var lo = document.getElementById('nav-logged-out');
+        var li = document.getElementById('nav-logged-in');
+        if (lo) lo.style.display = 'none';
+        if (li) li.style.display = 'flex';
+      } else {
+        showLoggedOut();
+      }
+    })
+    .catch(function() { showLoggedOut(); });
+})();
+</script></div></header></div><div id="post-root"></div><script>
+(function() {
+  function formatDate(dateStr, format) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr);
+  if (isNaN(d)) return '';
+  var opts;
+  switch (format) {
+    case 'short':
+      opts = { month: 'short', day: 'numeric' };
+      break;
+    case 'long':
+      opts = { year: 'numeric', month: 'long', day: 'numeric' };
+      break;
+    case 'full':
+      opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      break;
+    default:
+      opts = { year: 'numeric', month: 'short', day: 'numeric' };
+      break;
+  }
+  return d.toLocaleDateString('en-US', opts);
+}
+  window.handleLike = function(postId) {
+  fetch('/api/likes/' + encodeURIComponent(postId), { method: 'POST', credentials: 'same-origin' })
+    .then(function(res) {
+      if (res.status === 401 || res.redirected) { window.location.href = '/login'; return null; }
+      return res.json();
+    })
+    .then(function(data) {
+      if (!data) return;
+      var btn = document.getElementById('like-heart-' + postId);
+      var countEl = document.getElementById('like-count-' + postId);
+      if (btn) {
+        var ic = btn.querySelector('.lucide');
+        if (ic) { ic.style.color = data.liked ? '#e53e3e' : 'var(--color-accent)'; }
+        else { btn.textContent = data.liked ? '\u2665' : '\u2661'; btn.style.color = data.liked ? '#e53e3e' : 'var(--color-muted)'; }
+      }
+      if (countEl) countEl.textContent = data.count;
+    })
+    .catch(function() {});
+};
+  function renderComment(c, container) {
+  var el = document.createElement('div');
+  el.style.cssText = 'padding:24px;background:var(--color-elevated);border:1px solid var(--color-border);border-radius:8px;';
+  var meta = document.createElement('div');
+  meta.style.cssText = 'font-family:var(--font-sans);font-size:11px;color:var(--color-muted);margin-bottom:8px;display:flex;gap:8px;align-items:center;';
+  var author = document.createElement('span');
+  author.style.fontWeight = '600';
+  author.textContent = c.authorName || c.authorId;
+  var sep = document.createElement('span');
+  sep.textContent = '\u00b7';
+  var ts = document.createElement('span');
+  ts.textContent = formatDate(c.createdAt, 'default');
+  meta.appendChild(author);
+  meta.appendChild(sep);
+  meta.appendChild(ts);
+  var body = document.createElement('p');
+  body.style.cssText = 'margin:0;font-family:var(--font-sans);font-size:14px;line-height:1.6;color:var(--color-text);white-space:pre-wrap;';
+  body.textContent = c.body;
+  el.appendChild(meta);
+  el.appendChild(body);
+  container.appendChild(el);
+}
+
+function loadComments(postId) {
+  var container = document.getElementById('comments-items-' + postId);
+  if (!container) return;
+  fetch('/api/comments/' + encodeURIComponent(postId))
+    .then(function(res) { return res.json(); })
+    .then(function(comments) {
+      container.textContent = '';
+      if (!comments || comments.length === 0) {
+        var empty = document.createElement('p');
+        empty.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);';
+        empty.textContent = 'No comments yet. Be the first!';
+        container.appendChild(empty);
+        return;
+      }
+      comments.forEach(function(c) { renderComment(c, container); });
+    })
+    .catch(function() {});
+}
+
+window.submitComment = function(postId) {
+  var input = document.getElementById('comment-input-' + postId);
+  var errEl = document.getElementById('comment-error-' + postId);
+  var body = input ? input.value.trim() : '';
+  if (!body) {
+    if (errEl) errEl.textContent = 'Comment cannot be empty.';
+    return;
+  }
+  fetch('/api/comments/' + encodeURIComponent(postId), {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ body: body })
+  })
+    .then(function(res) {
+      if (res.status === 401 || res.redirected) {
+        window.location.href = '/login';
+        return null;
+      }
+      if (!res.ok) { return res.json().then(function(e) { throw new Error(e.error || 'Failed'); }); }
+      return res.json();
+    })
+    .then(function(comment) {
+      if (!comment) return;
+      if (errEl) errEl.textContent = '';
+      if (input) input.value = '';
+      var container = document.getElementById('comments-items-' + postId);
+      if (container && container.querySelector('p')) { container.textContent = ''; }
+      if (container) renderComment(comment, container);
+    })
+    .catch(function(err) {
+      if (errEl) errEl.textContent = err.message || 'Failed to post comment.';
+    });
+};
+
+// LikeButton mount
+function mountLikeButton(postId, container) {
+  container.innerHTML = '<button id="like-heart-' + postId + '" onclick="handleLike(\'' + postId + '\')" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 20px;border:1px solid var(--color-border);border-radius:0;background:none;cursor:pointer;" aria-label="Like" title="Like"><i class="lucide lucide-heart" style="font-size:18px;color:var(--color-accent);"></i> <span id="like-count-' + postId + '" style="font-family:var(--font-mono);font-size:13px;color:var(--color-text);">...</span></button>';
+  fetch('/api/likes/' + encodeURIComponent(postId), { credentials: 'same-origin' })
+    .then(function(res) { return res.ok ? res.json() : null; })
+    .then(function(data) {
+      if (!data) return;
+      var btn = document.getElementById('like-heart-' + postId);
+      var countEl = document.getElementById('like-count-' + postId);
+      if (btn) { var ic = btn.querySelector('.lucide'); if (ic) ic.style.color = data.liked ? '#e53e3e' : 'var(--color-accent)'; }
+      if (countEl) countEl.textContent = data.count;
+    })
+    .catch(function() {
+      var countEl = document.getElementById('like-count-' + postId);
+      if (countEl) countEl.textContent = '0';
+    });
+}
+
+// CommentList mount — uses shared comment functions
+function mountCommentList(postId, container) {
+  container.innerHTML = '<h3 style="font-family:var(--font-serif);font-size:22px;font-weight:600;color:var(--color-text);margin-bottom:16px;">Comments</h3><div id="comments-items-' + postId + '" style="display:flex;flex-direction:column;gap:16px;"></div><div style="margin-top:24px;"><textarea id="comment-input-' + postId + '" placeholder="Add a comment\u2026" rows="3" style="width:100%;padding:14px;border:1px solid var(--color-border);border-radius:8px;font-family:var(--font-sans);font-size:14px;color:var(--color-text);background:var(--color-elevated);resize:vertical;box-sizing:border-box;"></textarea><div style="margin-top:8px;display:flex;align-items:center;gap:10px;"><button onclick="submitComment(\'' + postId + '\')" style="padding:10px 20px;background:var(--color-accent);color:var(--color-bg);border:none;border-radius:6px;font-family:var(--font-sans);font-size:13px;font-weight:500;cursor:pointer;">Post Comment</button><span id="comment-error-' + postId + '" style="font-family:var(--font-sans);font-size:13px;color:#e53e3e;"></span></div></div>'; loadComments(postId); } var root = document.getElementById('post-root'); if (!root) return; var parts = window.location.pathname.split('/').filter(Boolean); var username = null; var slug = null; if (parts.length >= 2 && parts[0].startsWith('@')) { username = parts[0].slice(1); slug = parts[1]; } else { var params = new URLSearchParams(window.location.search); slug = params.get('slug'); username = params.get('username'); } if (!slug) { root.textContent = 'Post not found.'; return; } root.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);padding:48px;'; root.textContent = 'Loading...'; fetch('/api/public/post/' + encodeURIComponent(slug)) .then(function(res) { if (!res.ok) throw new Error('not found'); return res.json(); }) .then(function(post) { var pub = formatDate(post.publishedAt, 'long'); root.textContent = ''; root.style.cssText = 'padding:48px;'; var article = document.createElement('article'); article.style.cssText = 'max-width:720px;margin:0 auto;'; // Author row var authorRow = document.createElement('div'); authorRow.style.cssText = 'display:flex;gap:12px;align-items:center;margin-bottom:24px;'; var avatar = document.createElement('div'); avatar.style.cssText = 'width:48px;height:48px;border-radius:50%;background:var(--color-accent);flex-shrink:0;'; authorRow.appendChild(avatar); var authorInfo = document.createElement('div'); authorInfo.style.cssText = 'display:flex;flex-direction:column;gap:2px;'; var authorLink = document.createElement('a'); authorLink.href = '/@' + encodeURIComponent(post.authorId); authorLink.style.cssText = 'font-family:var(--font-sans);font-size:14px;font-weight:500;text-decoration:none;color:var(--color-text);'; authorLink.textContent = post.authorId; authorInfo.appendChild(authorLink); var dateLine = document.createElement('span'); dateLine.style.cssText = 'font-family:var(--font-sans);font-size:12px;color:var(--color-muted);'; dateLine.textContent = pub + ' \u00b7 ' + (post.estimatedReadMinutes || 1) + ' min read'; authorInfo.appendChild(dateLine); authorRow.appendChild(authorInfo); article.appendChild(authorRow); // Title var h1 = document.createElement('h1'); h1.style.cssText = 'font-family:var(--font-serif);font-size:32px;font-weight:700;line-height:1.2;color:var(--color-text);margin-bottom:24px;'; h1.textContent = post.title; article.appendChild(h1); // Body var bodyEl = document.createElement('div'); bodyEl.style.cssText = 'line-height:1.75;font-family:var(--font-sans);font-size:15px;color:var(--color-text);white-space:pre-wrap;'; bodyEl.textContent = post.body; article.appendChild(bodyEl); // LikeButton var likeDiv = document.createElement('div'); likeDiv.id = 'post-like-btn'; likeDiv.style.marginTop = '40px'; article.appendChild(likeDiv); mountLikeButton(post.id, likeDiv); // CommentList var commentsDiv = document.createElement('div'); commentsDiv.id = 'post-comments'; commentsDiv.style.marginTop = '40px'; article.appendChild(commentsDiv); mountCommentList(post.id, commentsDiv); root.appendChild(article); }) .catch(function() { root.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);padding:48px;'; root.textContent = 'Post not found.'; }); })();</script></div></body></html>

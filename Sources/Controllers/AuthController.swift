@@ -26,7 +26,14 @@ struct AuthController: Controller {
             )
         }
 
-        try await AuthHelper.shared.magicLinks.send(to: email)
+        do {
+            try await AuthHelper.shared.magicLinks.send(to: email)
+        } catch {
+            return Response.json(
+                Data(#"{"error":"Failed to send email. Please try again."}"#.utf8),
+                status: .internalServerError
+            )
+        }
 
         return Response.json(
             Data(#"{"ok":true,"message":"Magic link sent. Check your email."}"#.utf8)
