@@ -25,12 +25,24 @@ This is a Score app. All code must follow Score conventions:
 
 Shared UI from the `allegro-theme` plugin is available:
 - Layout: `AppHeader`, `AppFooter`, `AppLayout`, `AppSidebar`, `SidebarLayout`
-- Navigation: `NavLink`, `ThemeToggle`
+- Navigation: `NavLink`, `ThemeToggle`, `LanguageDropdown`
 - Buttons: `SubmitButton`, `SecondaryButton`, `ActionLink`, `BackLink`
 - Forms: `FormField`, `UsageBar`
 - Primitives: `Badge`, `StatusDot`, `Divider`, `SectionLabel`
 - Auth: `AuthLoginPage`
 - Errors: `ThemeErrorPage`
+
+## Localization
+
+This app uses Score's i18n system:
+
+- **String catalog:** `Localizable.xcstrings` — Xcode String Catalog format (JSON). Source language is `en`.
+- **Loading:** `App.swift` loads the catalog via `Localization(catalog: StringCatalog.load(from: "Localizable.xcstrings"))`.
+- **Usage in components:** Use `Localized("key")` to emit a translated `Node`, or `t("key")` to get a translated `String` for component props.
+- **Routing:** Default locale (`en`) renders at `/`, others render at `/<locale>/` (e.g. `/es/blog`).
+- **Language switcher:** `LanguageDropdown` from allegro-theme in the NavBar — reads supported locales from the string catalog automatically.
+- **Adding a language:** Add translations to `Localizable.xcstrings` under a new locale key. The dropdown and routing pick it up automatically.
+- **Adding a string:** Add the key to `Localizable.xcstrings` with translations for all supported locales, then use `Localized("key")` or `t("key")` in your component.
 
 ## Development
 
