@@ -6,8 +6,6 @@ struct SettingsPage: Page {
 
     var body: some Node {
         Stack {
-            RawTextNode("<style>input,textarea,select{background:var(--color-elevated)!important;border:1px solid var(--color-border)!important;color:var(--color-text)!important;font-family:var(--font-sans)!important;font-size:14px!important;padding:12px 16px!important;border-radius:6px!important;outline:none!important}input::placeholder,textarea::placeholder{color:var(--color-muted)!important}select{appearance:none;cursor:pointer}</style>")
-
             // Sidebar + Main content
             Stack {
                 // Sidebar (240px, surface bg)
@@ -36,8 +34,9 @@ struct SettingsPage: Page {
                 .flex(.column, gap: 0)
                 .size(width: 240)
                 .background(.surface)
-                .htmlAttribute("style", "border-right:1px solid var(--color-border);min-height:100vh")
-                .compact { $0.htmlAttribute("style", "width:auto;border-right:none;border-bottom:1px solid var(--color-border)") }
+                .border(width: 1, color: .border, style: .solid, at: .trailing)
+                .size(minHeight: .percent(100))
+                .compact { $0.size(width: .percent(100)).border(width: 0, color: .border, style: .solid, at: .trailing).border(width: 1, color: .border, style: .solid, at: .bottom) }
 
                 // Main content
                 Section {
@@ -56,7 +55,7 @@ struct SettingsPage: Page {
                             Stack {}
                                 .htmlAttribute("id", "settings-avatar")
                                 .size(width: 80, height: 80)
-                                .radius(40)
+                                .border(radius: 40)
                                 .background(.elevated)
                                 .border(width: 1, color: .border, style: .solid)
 
@@ -76,12 +75,20 @@ struct SettingsPage: Page {
                         formField(label: "Display Name", inputId: "settings-displayName", type: .text, placeholder: "Your name")
 
                         Stack {
-                            RawTextNode("<label for=\"settings-username\" style=\"font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">Username</label>")
+                            Label(for: "settings-username") {
+                                Text { "Username" }
+                            }
+                            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .muted, transform: .uppercase)
                             Input(type: .text, name: "username", placeholder: "username")
                                 .htmlAttribute("id", "settings-username")
-                                .padding(14)
-                                .font(.sans, size: 14)
+                                .padding(12, at: .vertical)
+                                .padding(16, at: .horizontal)
+                                .font(.sans, size: 14, color: .text)
+                                .background(.elevated)
                                 .border(width: 1, color: .border, style: .solid)
+                                .border(radius: 6)
+                                .outline(width: 0, style: .none, color: .border)
+                                .placeholder { $0.font(color: .muted) }
                             Text { "" }
                                 .htmlAttribute("id", "settings-username-helper")
                                 .font(.sans, size: 12, color: .composer)
@@ -91,12 +98,23 @@ struct SettingsPage: Page {
                         formField(label: "Email", inputId: "settings-email", type: .email, placeholder: "you@example.com")
 
                         Stack {
-                            RawTextNode("<label for=\"settings-bio\" style=\"font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">Bio</label>")
-                            RawTextNode("<textarea id=\"settings-bio\" rows=\"3\" placeholder=\"A short bio\" style=\"padding:14px;font-family:var(--font-sans);font-size:14px;color:var(--color-text);background:var(--color-elevated);border:1px solid var(--color-border);border-radius:6px;width:100%;box-sizing:border-box;resize:vertical;outline:none\"></textarea>")
+                            Label(for: "settings-bio") {
+                                Text { "Bio" }
+                            }
+                            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .muted, transform: .uppercase)
+                            TextArea(name: "bio", placeholder: "A short bio", rows: 3, id: "settings-bio")
+                                .padding(14)
+                                .font(.sans, size: 14, color: .text)
+                                .background(.elevated)
+                                .border(width: 1, color: .border, style: .solid)
+                                .border(radius: 6)
+                                .size(width: .percent(100))
+                                .outline(width: 0, style: .none, color: .border)
+                                .placeholder { $0.font(color: .muted) }
                             Text { "" }
                                 .htmlAttribute("id", "settings-bio-count")
                                 .font(.mono, size: 11, color: .muted)
-                                .htmlAttribute("style", "text-align:right")
+                                .font(align: .end)
                         }
                         .flex(.column, gap: 8)
                     }
@@ -127,7 +145,7 @@ struct SettingsPage: Page {
                         .padding(10, at: .vertical)
                         .padding(20, at: .horizontal)
                         .background(.composer)
-                        .radius(4)
+                        .border(radius: 4)
                         .hover { $0.opacity(0.85) }
                     }
                     .flex(.column, gap: 12)
@@ -137,11 +155,13 @@ struct SettingsPage: Page {
                 .padding(64, at: .horizontal)
                 .size(maxWidth: 740)
                 .compact { $0.padding(24, at: .vertical).padding(20, at: .horizontal) }
-                .htmlAttribute("style", "flex:1")
+                .flex(grow: 1)
             }
             .flex(.row, gap: 0)
             .compact { $0.flex(.column, gap: 0) }
 
+            // SCORE-GAP: Client-side fetch for loading/saving profile data, username
+            // availability check, and bio character count require raw JS.
             RawTextNode(settingsScript)
         }
         .flex(.column, gap: 0)
@@ -160,125 +180,133 @@ struct SettingsPage: Page {
         .font(.sans, size: 14, color: active ? .text : .muted, decoration: TextDecoration.none)
         .padding(10, at: .vertical)
         .padding(16, at: .horizontal)
-        .radius(6)
+        .border(radius: 6)
         .background(active ? .elevated : .surface)
         .hover { $0.background(.elevated) }
     }
 
     private func formField(label: String, inputId: String, type: InputType, placeholder: String) -> some Node {
         Stack {
-            RawTextNode("<label for=\"\(inputId)\" style=\"font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-muted)\">\(label)</label>")
+            Label(for: inputId) {
+                Text { label }
+            }
+            .font(.mono, size: 11, weight: .medium, tracking: 2, color: .muted, transform: .uppercase)
             Input(type: type, name: inputId.replacingOccurrences(of: "settings-", with: ""), placeholder: placeholder)
                 .htmlAttribute("id", inputId)
-                .padding(14)
-                .font(.sans, size: 14)
+                .padding(12, at: .vertical)
+                .padding(16, at: .horizontal)
+                .font(.sans, size: 14, color: .text)
+                .background(.elevated)
                 .border(width: 1, color: .border, style: .solid)
+                .border(radius: 6)
+                .outline(width: 0, style: .none, color: .border)
+                .placeholder { $0.font(color: .muted) }
         }
         .flex(.column, gap: 8)
     }
 }
 
 private let settingsScript = """
-<script>
-(function() {
-  // Bio char count
-  var bio = document.getElementById('settings-bio');
-  var bioCount = document.getElementById('settings-bio-count');
-  if (bio && bioCount) {
-    function updateBioCount() {
-      bioCount.textContent = bio.value.length + ' / 160';
-    }
-    bio.addEventListener('input', updateBioCount);
-    updateBioCount();
-  }
-
-  // Username availability
-  var usernameInput = document.getElementById('settings-username');
-  var usernameHelper = document.getElementById('settings-username-helper');
-  var usernameTimer = null;
-  if (usernameInput && usernameHelper) {
-    usernameInput.addEventListener('input', function() {
-      clearTimeout(usernameTimer);
-      var val = usernameInput.value.trim();
-      if (!val) { usernameHelper.textContent = ''; return; }
-      usernameHelper.textContent = 'Checking...';
-      usernameHelper.style.color = 'var(--color-muted)';
-      usernameTimer = setTimeout(function() {
-        usernameHelper.textContent = 'username available';
-        usernameHelper.style.color = 'var(--color-composer)';
-      }, 400);
-    });
-  }
-
-  // Load current profile
-  fetch('/api/profile', { credentials: 'include' })
-    .then(function(r) {
-      if (r.status === 401) { window.location.href = '/login'; return null; }
-      return r.ok ? r.json() : null;
-    })
-    .then(function(p) {
-      if (!p) return;
-      setValue('settings-displayName', p.displayName || '');
-      setValue('settings-username', p.username || '');
-      setValue('settings-email', p.email || '');
-      if (bio) bio.value = p.bio || '';
-      if (bio && bioCount) bioCount.textContent = (p.bio || '').length + ' / 160';
-      var links = p.socialLinks || [];
-      links.forEach(function(l) {
-        if (l.platform === 'github') setValue('settings-github', l.url);
-        else if (l.platform === 'twitter') setValue('settings-twitter', l.url);
-      });
-    })
-    .catch(function() {});
-
-  // Save
-  var btn = document.getElementById('settings-save-btn');
-  var status = document.getElementById('settings-status');
-  if (!btn) return;
-
-  btn.addEventListener('click', function() {
-    var socialLinks = [];
-    var github = getValue('settings-github');
-    var twitter = getValue('settings-twitter');
-    if (github) socialLinks.push({ platform: 'github', url: github });
-    if (twitter) socialLinks.push({ platform: 'twitter', url: twitter });
-
-    var payload = {
-      displayName: getValue('settings-displayName'),
-      username: getValue('settings-username'),
-      email: getValue('settings-email'),
-      bio: bio ? bio.value.trim() : '',
-      socialLinks: socialLinks,
-    };
-
-    btn.disabled = true;
-    status.textContent = 'Saving...';
-    fetch('/api/profile', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(payload),
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.error) {
-        status.textContent = 'Error: ' + data.error;
-      } else {
-        status.textContent = 'Saved!';
+    <script>
+    (function() {
+      // Bio char count
+      var bio = document.getElementById('settings-bio');
+      var bioCount = document.getElementById('settings-bio-count');
+      if (bio && bioCount) {
+        function updateBioCount() {
+          bioCount.textContent = bio.value.length + ' / 160';
+        }
+        bio.addEventListener('input', updateBioCount);
+        updateBioCount();
       }
-    })
-    .catch(function() { status.textContent = 'Network error. Please try again.'; })
-    .finally(function() { btn.disabled = false; });
-  });
 
-  function getValue(id) {
-    var el = document.getElementById(id);
-    return el ? el.value.trim() : '';
-  }
-  function setValue(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.value = val;
-  }
-})();
-</script>
-"""
+      // Username availability
+      var usernameInput = document.getElementById('settings-username');
+      var usernameHelper = document.getElementById('settings-username-helper');
+      var usernameTimer = null;
+      if (usernameInput && usernameHelper) {
+        usernameInput.addEventListener('input', function() {
+          clearTimeout(usernameTimer);
+          var val = usernameInput.value.trim();
+          if (!val) { usernameHelper.textContent = ''; return; }
+          usernameHelper.textContent = 'Checking...';
+          usernameHelper.style.color = 'var(--color-muted)';
+          usernameTimer = setTimeout(function() {
+            usernameHelper.textContent = 'username available';
+            usernameHelper.style.color = 'var(--color-composer)';
+          }, 400);
+        });
+      }
+
+      // Load current profile
+      fetch('/api/profile', { credentials: 'include' })
+        .then(function(r) {
+          if (r.status === 401) { window.location.href = '/login'; return null; }
+          return r.ok ? r.json() : null;
+        })
+        .then(function(p) {
+          if (!p) return;
+          setValue('settings-displayName', p.displayName || '');
+          setValue('settings-username', p.username || '');
+          setValue('settings-email', p.email || '');
+          if (bio) bio.value = p.bio || '';
+          if (bio && bioCount) bioCount.textContent = (p.bio || '').length + ' / 160';
+          var links = p.socialLinks || [];
+          links.forEach(function(l) {
+            if (l.platform === 'github') setValue('settings-github', l.url);
+            else if (l.platform === 'twitter') setValue('settings-twitter', l.url);
+          });
+        })
+        .catch(function() {});
+
+      // Save
+      var btn = document.getElementById('settings-save-btn');
+      var status = document.getElementById('settings-status');
+      if (!btn) return;
+
+      btn.addEventListener('click', function() {
+        var socialLinks = [];
+        var github = getValue('settings-github');
+        var twitter = getValue('settings-twitter');
+        if (github) socialLinks.push({ platform: 'github', url: github });
+        if (twitter) socialLinks.push({ platform: 'twitter', url: twitter });
+
+        var payload = {
+          displayName: getValue('settings-displayName'),
+          username: getValue('settings-username'),
+          email: getValue('settings-email'),
+          bio: bio ? bio.value.trim() : '',
+          socialLinks: socialLinks,
+        };
+
+        btn.disabled = true;
+        status.textContent = 'Saving...';
+        fetch('/api/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.error) {
+            status.textContent = 'Error: ' + data.error;
+          } else {
+            status.textContent = 'Saved!';
+          }
+        })
+        .catch(function() { status.textContent = 'Network error. Please try again.'; })
+        .finally(function() { btn.disabled = false; });
+      });
+
+      function getValue(id) {
+        var el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      }
+      function setValue(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.value = val;
+      }
+    })();
+    </script>
+    """

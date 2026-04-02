@@ -38,8 +38,9 @@ struct CheckoutPage: Page {
                 .flex(.column, gap: 0)
                 .size(width: 240)
                 .background(.surface)
-                .htmlAttribute("style", "border-right:1px solid var(--color-border);min-height:100vh")
-                .compact { $0.htmlAttribute("style", "width:auto;border-right:none;border-bottom:1px solid var(--color-border)") }
+                .border(width: 1, color: .border, style: .solid, at: .trailing)
+                .size(minHeight: .percent(100))
+                .compact { $0.size(width: .percent(100)).border(width: 0, color: .border, style: .solid, at: .trailing).border(width: 1, color: .border, style: .solid, at: .bottom) }
 
                 // Main content
                 Section {
@@ -89,7 +90,7 @@ struct CheckoutPage: Page {
                         .padding(24)
                         .background(.elevated)
                         .border(width: 1, color: .border, style: .solid)
-                        .radius(8)
+                        .border(radius: 8)
                     }
                     .flex(.column, gap: 12)
 
@@ -106,7 +107,7 @@ struct CheckoutPage: Page {
                         .padding(24)
                         .background(.elevated)
                         .border(width: 1, color: .border, style: .solid)
-                        .radius(8)
+                        .border(radius: 8)
                     }
                     .flex(.column, gap: 12)
 
@@ -115,12 +116,13 @@ struct CheckoutPage: Page {
                         Text { "Confirm Upgrade" }
                     }
                     .htmlAttribute("id", "confirm-btn")
+                    // SCORE-GAP: Revolut payment SDK integration requires JS
                     .htmlAttribute("onclick", "submitCheckout()")
                     .font(.sans, size: 14, weight: .medium, color: .bg)
                     .padding(12, at: .vertical)
                     .padding(24, at: .horizontal)
                     .background(.composer)
-                    .radius(4)
+                    .border(radius: 4)
                     .hover { $0.opacity(0.85) }
                     .size(width: .percent(100))
                 }
@@ -129,7 +131,7 @@ struct CheckoutPage: Page {
                 .padding(64, at: .horizontal)
                 .size(maxWidth: 640)
                 .compact { $0.padding(24, at: .vertical).padding(20, at: .horizontal) }
-                .htmlAttribute("style", "flex:1")
+                .flex(grow: 1)
             }
             .flex(.row, gap: 0)
             .compact { $0.flex(.column, gap: 0) }
@@ -152,7 +154,7 @@ struct CheckoutPage: Page {
         .font(.sans, size: 14, color: active ? .text : .muted, decoration: TextDecoration.none)
         .padding(10, at: .vertical)
         .padding(16, at: .horizontal)
-        .radius(6)
+        .border(radius: 6)
         .background(active ? .elevated : .surface)
         .hover { $0.background(.elevated) }
     }
@@ -161,38 +163,38 @@ struct CheckoutPage: Page {
 // MARK: - Client Script
 
 private let checkoutScript = """
-<script>
-async function submitCheckout() {
-  var btn = document.getElementById('confirm-btn');
-  var status = document.getElementById('checkout-status');
-  var planRadios = document.querySelectorAll('input[name="plan"]');
-  var selectedPlan = 'pro';
-  planRadios.forEach(function(r) { if (r.checked) selectedPlan = r.value; });
+    <script>
+    async function submitCheckout() {
+      var btn = document.getElementById('confirm-btn');
+      var status = document.getElementById('checkout-status');
+      var planRadios = document.querySelectorAll('input[name="plan"]');
+      var selectedPlan = 'pro';
+      planRadios.forEach(function(r) { if (r.checked) selectedPlan = r.value; });
 
-  btn.disabled = true;
-  status.textContent = 'Creating checkout session...';
-  status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);padding:0';
+      btn.disabled = true;
+      status.textContent = 'Creating checkout session...';
+      status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-muted);padding:0';
 
-  try {
-    var res = await fetch('/api/billing/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: selectedPlan })
-    });
-    var json = await res.json();
-    if (res.ok) {
-      status.textContent = 'Session created. Redirecting to payment...';
-      status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-composer);padding:0';
-    } else {
-      status.textContent = 'Error: ' + (json.message || res.statusText);
-      status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:#e53e3e;padding:0';
-      btn.disabled = false;
+      try {
+        var res = await fetch('/api/billing/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan: selectedPlan })
+        });
+        var json = await res.json();
+        if (res.ok) {
+          status.textContent = 'Session created. Redirecting to payment...';
+          status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:var(--color-composer);padding:0';
+        } else {
+          status.textContent = 'Error: ' + (json.message || res.statusText);
+          status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:#e53e3e;padding:0';
+          btn.disabled = false;
+        }
+      } catch (e) {
+        status.textContent = 'Request failed: ' + e.message;
+        status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:#e53e3e;padding:0';
+        btn.disabled = false;
+      }
     }
-  } catch (e) {
-    status.textContent = 'Request failed: ' + e.message;
-    status.style.cssText = 'font-family:var(--font-sans);font-size:13px;color:#e53e3e;padding:0';
-    btn.disabled = false;
-  }
-}
-</script>
-"""
+    </script>
+    """

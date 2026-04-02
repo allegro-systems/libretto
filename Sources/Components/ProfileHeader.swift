@@ -40,7 +40,10 @@ struct ProfileHeader: Node {
     @NodeBuilder
     private var avatarNode: some Node {
         if let url = avatarURL, !url.isEmpty {
-            RawTextNode("<img src=\"\(url)\" alt=\"\(displayName)\" style=\"width:72px;height:72px;border-radius:50%;object-fit:cover;\">")
+            Image(src: url, alt: displayName)
+                .size(width: 72, height: 72)
+                .objectFit(.cover)
+                .border(radius: 36)
         } else {
             // Initials placeholder
             let initials = String(displayName.prefix(1)).uppercased()
@@ -48,7 +51,10 @@ struct ProfileHeader: Node {
                 Text { initials }
                     .font(.sans, size: 28, weight: .medium, color: .bg)
             }
-            .htmlAttribute("style", "width:72px;height:72px;border-radius:50%;background:var(--color-accent);display:flex;align-items:center;justify-content:center;")
+            .size(width: 72, height: 72)
+            .border(radius: 36)
+            .background(.accent)
+            .flex(.row, align: .center, justify: .center)
         }
     }
 }

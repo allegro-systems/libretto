@@ -28,7 +28,7 @@ struct LibrettoErrorPage: ErrorPage {
                     .padding(10, at: .vertical)
                     .padding(20, at: .horizontal)
                     .border(width: 1, color: .border, style: .solid)
-                    .radius(4)
+                    .border(radius: 4)
                     .hover { $0.background(.elevated) }
                     .animate(.fadeIn, duration: 0.6, delay: 0.45)
             }
@@ -47,7 +47,7 @@ struct LibrettoErrorPage: ErrorPage {
         case 404: return "Page Not Found"
         case 403: return "Access Denied"
         case 500: return "Something Went Wrong"
-        default:  return "Error"
+        default: return "Error"
         }
     }
 }

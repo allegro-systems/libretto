@@ -1,6 +1,6 @@
+import AllegroTheme
 import Score
 import ScoreLucide
-import AllegroTheme
 
 /// Shared sidebar layout for authenticated Libretto pages (Settings, Billing, etc.).
 ///

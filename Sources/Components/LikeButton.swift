@@ -7,23 +7,37 @@ struct LikeButton: Node {
 
     var body: some Node {
         Stack {
-            RawTextNode(likeButtonScript(postId: postId, initialCount: initialCount, initialLiked: initialLiked))
+            Stack {
+                // SCORE-GAP: Button uses onclick handler for client-side fetch to toggle
+                // like state. Needs @Action + client-side fetch support in Score.
+                RawTextNode(likeHeartButton(postId: postId, initialLiked: initialLiked))
+                Text { "\(initialCount)" }
+                    .htmlAttribute("id", "like-count-\(postId)")
+                    .font(.sans, size: 13, color: .muted)
+            }
+            .htmlAttribute("id", "like-btn-\(postId)")
+            .flex(.row, gap: 8, align: .center)
+
+            // SCORE-GAP: Client-side fetch for like toggling and DOM updates require raw JS.
+            RawTextNode(likeScript(postId: postId, initialLiked: initialLiked))
         }
     }
 }
 
-private func likeButtonScript(postId: String, initialCount: Int, initialLiked: Bool) -> String {
+private func likeHeartButton(postId: String, initialLiked: Bool) -> String {
     """
-    <div id="like-btn-\(postId)" style="display:inline-flex;align-items:center;gap:8px;">
-      <button
-        onclick="handleLike('\(postId)')"
-        id="like-heart-\(postId)"
-        style="background:none;border:none;cursor:pointer;font-size:22px;padding:0;line-height:1;color:\(initialLiked ? "#e53e3e" : "var(--color-muted)");"
-        aria-label="Like this post"
-        title="Like"
-      >\(initialLiked ? "\u{2665}" : "\u{2661}")</button>
-      <span id="like-count-\(postId)" style="font-family:var(--font-sans);font-size:13px;color:var(--color-muted);">\(initialCount)</span>
-    </div>
+    <button
+      onclick="handleLike('\(postId)')"
+      id="like-heart-\(postId)"
+      style="background:none;border:none;cursor:pointer;font-size:22px;padding:0;line-height:1;color:\(initialLiked ? "#e53e3e" : "var(--color-muted)");"
+      aria-label="Like this post"
+      title="Like"
+    >\(initialLiked ? "\u{2665}" : "\u{2661}")</button>
+    """
+}
+
+private func likeScript(postId: String, initialLiked: Bool) -> String {
+    """
     <script>
     (function() {
       var _likedState = \(initialLiked ? "true" : "false");

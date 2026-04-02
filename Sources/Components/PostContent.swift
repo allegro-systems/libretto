@@ -13,7 +13,10 @@ struct PostContent: Node {
             // Author row
             Stack {
                 Stack {}
-                    .htmlAttribute("style", "width:48px;height:48px;border-radius:50%;background:var(--color-accent);flex-shrink:0;")
+                    .size(width: 48, height: 48)
+                    .border(radius: 24)
+                    .background(.accent)
+                    .flex(shrink: 0)
 
                 Stack {
                     Link(to: "/@\(username)") {

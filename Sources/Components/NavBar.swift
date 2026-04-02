@@ -1,6 +1,6 @@
+import AllegroTheme
 import Score
 import ScoreLucide
-import AllegroTheme
 
 struct NavBar: Node {
     var body: some Node {
@@ -12,12 +12,13 @@ struct NavBar: Node {
                         .font(.serif, size: 20, weight: .light, color: .text)
                     Text { "by Allegro" }
                         .font(.serif, size: 9, weight: .light, color: .muted)
-                        .htmlAttribute("style", "font-style:italic;position:absolute;bottom:-1px;right:-2px;")
+                        .position(.absolute, bottom: -1, trailing: -2)
                 }
-                .htmlAttribute("style", "position:relative;padding-right:6px;")
+                .position(.relative)
+                .padding(6, at: .trailing)
             }
             .font(decoration: TextDecoration.none)
-            .flexItem(grow: 1)
+            .flex(grow: 1)
 
             // Center — search bar
             Stack {
@@ -25,7 +26,10 @@ struct NavBar: Node {
                     Icon("search", size: 16, color: .dimmer)
                     Input(type: .search, name: "q", placeholder: "Search posts, writers, topics\u{2026}")
                         .htmlAttribute("id", "search-input")
-                        .htmlAttribute("style", "background:transparent;border:none;outline:none;width:100%;color:var(--color-text);font-family:var(--font-sans);font-size:13px;")
+                        .border(width: 0, color: .border, style: .none)
+                        .outline(width: 0, style: .none, color: .border)
+                        .size(width: .percent(100))
+                        .font(.sans, size: 13, color: .text)
                 }
                 .flex(.row, gap: 10, align: .center)
                 .padding(8, at: .vertical)
@@ -35,7 +39,7 @@ struct NavBar: Node {
                 .size(width: .percent(100), maxWidth: 400)
             }
             .flex(.row, justify: .center)
-            .flexItem(grow: 1)
+            .flex(grow: 1)
             .compact { $0.hidden() }
 
             // Language selector
@@ -50,12 +54,12 @@ struct NavBar: Node {
                 .padding(8, at: .vertical)
                 .padding(20, at: .horizontal)
                 .background(.accent)
-                .radius(6)
+                .border(radius: 6)
                 .flex(.row, align: .center, justify: .center)
                 .hover { $0.opacity(0.85) }
             }
             .flex(.row, gap: 12, align: .center, justify: .end)
-            .flexItem(grow: 1)
+            .flex(grow: 1)
             .htmlAttribute("id", "nav-logged-out")
 
             // Right — logged-in state (hidden by default, shown when authed)
@@ -73,15 +77,15 @@ struct NavBar: Node {
                     Stack {}
                         .size(width: 32, height: 32)
                         .background(.accent)
-                        .radius(16)
+                        .border(radius: 16)
                         .htmlAttribute("id", "nav-avatar")
                 }
                 .font(decoration: TextDecoration.none)
             }
             .flex(.row, gap: 20, align: .center, justify: .end)
-            .flexItem(grow: 1)
+            .flex(grow: 1)
             .htmlAttribute("id", "nav-logged-in")
-            .htmlAttribute("style", "display:none;")
+            .display(.none)
 
             RawTextNode(navAuthScript)
         }
@@ -95,19 +99,19 @@ struct NavBar: Node {
 
 /// Client-side script to toggle nav state based on auth
 private let navAuthScript = """
-<script>
-(function() {
-  fetch('/auth/me', { credentials: 'same-origin' })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(user) {
-      if (user && user.id) {
-        var lo = document.getElementById('nav-logged-out');
-        var li = document.getElementById('nav-logged-in');
-        if (lo) lo.style.display = 'none';
-        if (li) li.style.display = 'flex';
-      }
-    })
-    .catch(function() {});
-})();
-</script>
-"""
+    <script>
+    (function() {
+      fetch('/auth/me', { credentials: 'same-origin' })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(user) {
+          if (user && user.id) {
+            var lo = document.getElementById('nav-logged-out');
+            var li = document.getElementById('nav-logged-in');
+            if (lo) lo.style.display = 'none';
+            if (li) li.style.display = 'flex';
+          }
+        })
+        .catch(function() {});
+    })();
+    </script>
+    """

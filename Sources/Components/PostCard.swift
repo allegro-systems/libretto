@@ -29,7 +29,10 @@ struct PostCard: Node {
 
             Stack {
                 Stack {}
-                    .htmlAttribute("style", "width:20px;height:20px;border-radius:50%;background:var(--color-accent);flex-shrink:0;")
+                    .size(width: 20, height: 20)
+                    .border(radius: 10)
+                    .background(.accent)
+                    .flex(shrink: 0)
 
                 Text { authorName }
                     .font(.sans, size: 11, color: .muted)

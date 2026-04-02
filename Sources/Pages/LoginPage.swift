@@ -1,5 +1,5 @@
-import Score
 import AllegroTheme
+import Score
 
 struct LoginPage: Page {
     static let path = "/login"

@@ -9,7 +9,8 @@ final class LibrettoStore: Sendable {
     }
 
     static func persistent() throws -> LibrettoStore {
-        let path = ProcessInfo.processInfo.environment["LIBRETTO_DATA_PATH"]
+        let path =
+            ProcessInfo.processInfo.environment["LIBRETTO_DATA_PATH"]
             ?? ".score/data.db"
         return LibrettoStore(store: try .persistent(path: path))
     }
@@ -97,13 +98,12 @@ final class LibrettoStore: Sendable {
 
     func toggleLike(postId: String, userId: String) async throws -> Bool {
         let key = ["likes", postId, userId]
-        if try await store.exists(key: key) {
-            try await store.delete(key: key)
-            return false  // unliked
-        } else {
+        guard try await store.exists(key: key) else {
             try await store.set(key: key, value: Like(postId: postId, userId: userId))
             return true  // liked
         }
+        try await store.delete(key: key)
+        return false  // unliked
     }
 
     func isLiked(postId: String, userId: String) async throws -> Bool {
