@@ -1,20 +1,13 @@
+import AllegroTheme
 import Foundation
 import Score
+import ScoreLucide
 import ScoreOAuth
 import ScorePayments
-import ScoreLucide
-import AllegroTheme
 
 @main
 struct LibrettoApp: Application {
     var theme: (any Theme)? { AllegroTheme() }
-
-    // swiftlint:disable:next force_try
-    private static let _localization: Localization? = try! Localization(
-        catalog: StringCatalog.load(from: "Localizable.xcstrings")
-    )
-
-    var localization: Localization? { Self._localization }
 
     var plugins: [any ScorePlugin] {
         [
@@ -24,7 +17,7 @@ struct LibrettoApp: Application {
                     .github(
                         clientId: ProcessInfo.processInfo.environment["GITHUB_CLIENT_ID"] ?? "",
                         clientSecret: ProcessInfo.processInfo.environment["GITHUB_CLIENT_SECRET"] ?? ""
-                    ),
+                    )
                 ]
             ),
             PaymentsPlugin(providers: [
@@ -32,7 +25,7 @@ struct LibrettoApp: Application {
                     apiKey: ProcessInfo.processInfo.environment["REVOLUT_API_KEY"] ?? "",
                     webhookSecret: ProcessInfo.processInfo.environment["REVOLUT_WEBHOOK_SECRET"] ?? "",
                     sandbox: ProcessInfo.processInfo.environment["REVOLUT_SANDBOX"] == "true"
-                ),
+                )
             ]),
         ]
     }
@@ -45,8 +38,7 @@ struct LibrettoApp: Application {
         DraftsPage()
         PostPage()
         BlogListPage()
-        BillingPage()
-        CheckoutPage()
+        BillingPages()
         ProfilePage()
         SettingsPage()
     }
