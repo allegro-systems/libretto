@@ -1,10 +1,7 @@
 [providers]
-keychain = { type = "keychain", service = "fnox" }
-infisical = { type = "infisical", project_id = "52838648-6a12-479a-bad9-6e3543df4998", environment = "prod", path = "/" }
+infisical = { type = "infisical", project_id = "52838648-6a12-479a-bad9-6e3543df4998", environment = "prod", path = "/", auth = "universal" }
 
 [secrets]
-INFISICAL_CLIENT_ID = { provider = "keychain", value = "infisical-client-id" }
-INFISICAL_CLIENT_SECRET = { provider = "keychain", value = "infisical-client-secret" }
 GITHUB_CLIENT_ID = { provider = "infisical", value = "GITHUB_CLIENT_ID" }
 GITHUB_CLIENT_SECRET = { provider = "infisical", value = "GITHUB_CLIENT_SECRET" }
 RESEND_API_KEY = { provider = "infisical", value = "RESEND_API_KEY" }
