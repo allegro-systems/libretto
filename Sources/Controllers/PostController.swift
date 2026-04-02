@@ -1,28 +1,25 @@
 import Foundation
 import Score
 
-struct PostController: Controller {
-    var base: String { "/api/posts" }
+// MARK: - Response Types
 
-    var routes: [Route] {
-        [
-            Route(method: .get, handler: listMyPosts),
-            Route(method: .post, handler: createPost),
-            Route(method: .get, path: ":postId", handler: getPost),
-            Route(method: .put, path: ":postId", handler: updatePost),
-            Route(method: .delete, path: ":postId", handler: deletePost),
-            Route(method: .post, path: ":postId/publish", handler: publishPost),
-            Route(method: .post, path: ":postId/unpublish", handler: unpublishPost),
-        ]
-    }
+private struct ErrorResponse: Codable {
+    let error: String
+}
 
-    // MARK: - Handlers
+private struct OkResponse: Codable {
+    let ok: Bool
+}
 
+@Controller("/api/posts")
+struct PostController {
+
+    @Route(method: .get)
     func listMyPosts(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         let posts = try await store.listPosts(authorId: user.id)
         let encoder = JSONEncoder()
@@ -31,17 +28,18 @@ struct PostController: Controller {
         return Response.json(data)
     }
 
+    @Route(method: .post)
     func createPost(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let body = ctx.body,
-              let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
-              let title = json["title"] as? String, !title.isEmpty
+            let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
+            let title = json["title"] as? String, !title.isEmpty
         else {
-            return Response.json(Data(#"{"error":"title is required"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "title is required")), status: .badRequest)
         }
         let postBody = json["body"] as? String ?? ""
         var post = Post(authorId: user.id, title: title, body: postBody)
@@ -53,20 +51,21 @@ struct PostController: Controller {
         return Response.json(data, status: .created)
     }
 
+    @Route(":postId", method: .get)
     func getPost(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let postId = ctx.pathParameters["postId"] else {
-            return Response.json(Data(#"{"error":"missing postId"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing postId")), status: .badRequest)
         }
         guard let post = try await store.getPost(authorId: user.id, postId: postId) else {
-            return Response.json(Data(#"{"error":"not found"}"#.utf8), status: .notFound)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "not found")), status: .notFound)
         }
         guard post.authorId == user.id else {
-            return Response.json(Data(#"{"error":"forbidden"}"#.utf8), status: .forbidden)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "forbidden")), status: .forbidden)
         }
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -74,25 +73,26 @@ struct PostController: Controller {
         return Response.json(data)
     }
 
+    @Route(":postId", method: .put)
     func updatePost(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let postId = ctx.pathParameters["postId"] else {
-            return Response.json(Data(#"{"error":"missing postId"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing postId")), status: .badRequest)
         }
         guard var post = try await store.getPost(authorId: user.id, postId: postId) else {
-            return Response.json(Data(#"{"error":"not found"}"#.utf8), status: .notFound)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "not found")), status: .notFound)
         }
         guard post.authorId == user.id else {
-            return Response.json(Data(#"{"error":"forbidden"}"#.utf8), status: .forbidden)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "forbidden")), status: .forbidden)
         }
         guard let body = ctx.body,
-              let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any]
+            let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any]
         else {
-            return Response.json(Data(#"{"error":"invalid body"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "invalid body")), status: .badRequest)
         }
         if let title = json["title"] as? String, !title.isEmpty {
             post.title = title
@@ -110,39 +110,41 @@ struct PostController: Controller {
         return Response.json(data)
     }
 
+    @Route(":postId", method: .delete)
     func deletePost(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let postId = ctx.pathParameters["postId"] else {
-            return Response.json(Data(#"{"error":"missing postId"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing postId")), status: .badRequest)
         }
         guard let post = try await store.getPost(authorId: user.id, postId: postId) else {
-            return Response.json(Data(#"{"error":"not found"}"#.utf8), status: .notFound)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "not found")), status: .notFound)
         }
         guard post.authorId == user.id else {
-            return Response.json(Data(#"{"error":"forbidden"}"#.utf8), status: .forbidden)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "forbidden")), status: .forbidden)
         }
         try await store.deletePost(authorId: user.id, postId: postId)
-        return Response.json(Data(#"{"ok":true}"#.utf8))
+        return Response.json(try JSONEncoder().encode(OkResponse(ok: true)))
     }
 
+    @Route(":postId/publish", method: .post)
     func publishPost(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let postId = ctx.pathParameters["postId"] else {
-            return Response.json(Data(#"{"error":"missing postId"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing postId")), status: .badRequest)
         }
         guard var post = try await store.getPost(authorId: user.id, postId: postId) else {
-            return Response.json(Data(#"{"error":"not found"}"#.utf8), status: .notFound)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "not found")), status: .notFound)
         }
         guard post.authorId == user.id else {
-            return Response.json(Data(#"{"error":"forbidden"}"#.utf8), status: .forbidden)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "forbidden")), status: .forbidden)
         }
         post.status = .published
         post.publishedAt = Date()
@@ -154,20 +156,21 @@ struct PostController: Controller {
         return Response.json(data)
     }
 
+    @Route(":postId/unpublish", method: .post)
     func unpublishPost(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let postId = ctx.pathParameters["postId"] else {
-            return Response.json(Data(#"{"error":"missing postId"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing postId")), status: .badRequest)
         }
         guard var post = try await store.getPost(authorId: user.id, postId: postId) else {
-            return Response.json(Data(#"{"error":"not found"}"#.utf8), status: .notFound)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "not found")), status: .notFound)
         }
         guard post.authorId == user.id else {
-            return Response.json(Data(#"{"error":"forbidden"}"#.utf8), status: .forbidden)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "forbidden")), status: .forbidden)
         }
         post.status = .draft
         post.updatedAt = Date()
@@ -181,16 +184,10 @@ struct PostController: Controller {
 
 // MARK: - Public
 
-struct PublicPostController: Controller {
-    var base: String { "/api/public" }
+@Controller("/api/public")
+struct PublicPostController {
 
-    var routes: [Route] {
-        [
-            Route(method: .get, path: "posts", handler: listPublished),
-            Route(method: .get, path: "post/:slug", handler: getBySlug),
-        ]
-    }
-
+    @Route("posts", method: .get)
     func listPublished(_ ctx: RequestContext) async throws -> Response {
         let store = try LibrettoStore.persistent()
         var posts = try await store.listPublishedPosts()
@@ -208,13 +205,14 @@ struct PublicPostController: Controller {
         return Response.json(data)
     }
 
+    @Route("post/:slug", method: .get)
     func getBySlug(_ ctx: RequestContext) async throws -> Response {
         guard let slug = ctx.pathParameters["slug"] else {
-            return Response.json(Data(#"{"error":"missing slug"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing slug")), status: .badRequest)
         }
         let store = try LibrettoStore.persistent()
         guard let post = try await store.getPostBySlug(slug), post.status == .published else {
-            return Response.json(Data(#"{"error":"not found"}"#.utf8), status: .notFound)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "not found")), status: .notFound)
         }
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601

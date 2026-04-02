@@ -1,15 +1,10 @@
 import Foundation
 import Score
 
-struct FeedController: Controller {
-    var base: String { "/feed" }
+@Controller("/feed")
+struct FeedController {
 
-    var routes: [Route] {
-        [
-            Route(method: .get, handler: rssFeed),
-        ]
-    }
-
+    @Route(method: .get)
     func rssFeed(_ ctx: RequestContext) async throws -> Response {
         let store = try LibrettoStore.persistent()
         let posts = try await store.listPublishedPosts(limit: 20)
@@ -31,15 +26,15 @@ struct FeedController: Controller {
             let pubDate = post.publishedAt.map { rfc822Formatter.string(from: $0) } ?? ""
 
             items += """
-                <item>
-                  <title>\(title)</title>
-                  <link>\(link)</link>
-                  <description>\(description)</description>
-                  <pubDate>\(pubDate)</pubDate>
-                  <guid>\(link)</guid>
-                </item>
+                    <item>
+                      <title>\(title)</title>
+                      <link>\(link)</link>
+                      <description>\(description)</description>
+                      <pubDate>\(pubDate)</pubDate>
+                      <guid>\(link)</guid>
+                    </item>
 
-            """
+                """
         }
 
         let xml = """

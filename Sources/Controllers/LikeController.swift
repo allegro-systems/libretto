@@ -1,50 +1,54 @@
 import Foundation
 import Score
 
-struct LikeController: Controller {
-    var base: String { "/api/likes" }
+// MARK: - Response Types
 
-    var routes: [Route] {
-        [
-            Route(method: .post, path: ":postId", handler: toggleLike),
-            Route(method: .get, path: ":postId", handler: getLikeStatus),
-        ]
-    }
+private struct ErrorResponse: Codable {
+    let error: String
+}
 
-    // MARK: - Handlers
+private struct LikeResponse: Codable {
+    let liked: Bool
+    let count: Int
+}
 
+@Controller("/api/likes")
+struct LikeController {
+
+    @Route(":postId", method: .post)
     func toggleLike(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let postId = ctx.pathParameters["postId"] else {
-            return Response.json(Data(#"{"error":"missing postId"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing postId")), status: .badRequest)
         }
         guard var post = try await store.getPostById(postId) else {
-            return Response.json(Data(#"{"error":"post not found"}"#.utf8), status: .notFound)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "post not found")), status: .notFound)
         }
         let liked = try await store.toggleLike(postId: postId, userId: user.id)
         let count = try await store.likeCount(postId: postId)
         post.likeCount = count
         try await store.savePost(post)
-        let responseJSON = #"{"liked":\#(liked),"count":\#(count)}"#
-        return Response.json(Data(responseJSON.utf8))
+        let data = try JSONEncoder().encode(LikeResponse(liked: liked, count: count))
+        return Response.json(data)
     }
 
+    @Route(":postId", method: .get)
     func getLikeStatus(_ ctx: RequestContext) async throws -> Response {
         if let denied = try await AuthHelper.shared.requireAuth(ctx) { return denied }
         let store = try LibrettoStore.persistent()
         guard let user = try await AuthHelper.shared.currentUser(from: ctx, store: store) else {
-            return Response.json(Data(#"{"error":"user not found"}"#.utf8), status: .unauthorized)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "user not found")), status: .unauthorized)
         }
         guard let postId = ctx.pathParameters["postId"] else {
-            return Response.json(Data(#"{"error":"missing postId"}"#.utf8), status: .badRequest)
+            return Response.json(try JSONEncoder().encode(ErrorResponse(error: "missing postId")), status: .badRequest)
         }
         let liked = try await store.isLiked(postId: postId, userId: user.id)
         let count = try await store.likeCount(postId: postId)
-        let responseJSON = #"{"liked":\#(liked),"count":\#(count)}"#
-        return Response.json(Data(responseJSON.utf8))
+        let data = try JSONEncoder().encode(LikeResponse(liked: liked, count: count))
+        return Response.json(data)
     }
 }
